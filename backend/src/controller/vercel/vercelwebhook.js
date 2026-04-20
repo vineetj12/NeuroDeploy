@@ -1,0 +1,1 @@
+export { handleVercelWebhook } from "./vercelwebhook.js";

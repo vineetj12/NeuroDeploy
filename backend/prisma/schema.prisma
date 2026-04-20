@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/PrismaClientManager/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  password        String
+  selectedModelId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  selectedModel AIModel?         @relation(fields: [selectedModelId], references: [id], onDelete: SetNull)
+  modelKeys     UserModelKey[]
+  credentials   UserCredential[]
+}
+
+model AIModel {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  provider  Provider
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  modelKeys UserModelKey[]
+}
+
+model UserModelKey {
+  id        String   @id @default(uuid())
+  userId    String
+  modelId   String
+  apiKey    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model AIModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, modelId])
+}
+
+model UserCredential {
+  id        String             @id @default(uuid())
+  userId    String
+  provider  CredentialProvider
+  name      String
+  secret    String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider, name])
+}
+
+enum Provider {
+  GEMINI
+  ANTHROPIC
+  OPENAI
+  DEEPSEEK
+  OTHER
+}
+
+enum CredentialProvider {
+  GITHUB
+  VERCEL
+  CUSTOM
+}

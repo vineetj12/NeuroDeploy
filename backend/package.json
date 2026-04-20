@@ -1,0 +1,36 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "dev:worker": "tsx watch src/worker/fixProjectWorker.ts",
+    "worker": "tsx src/worker/fixProjectWorker.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "@types/axios": "^0.9.36",
+    "@types/express": "^5.0.6",
+    "axios": "^1.15.0",
+    "bullmq": "^5.58.2",
+    "dockerode": "^4.0.10",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^5.8.1",
+    "prisma": "^7.7.0",
+    "simple-git": "^3.36.0",
+    "tar-fs": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^4.0.1",
+    "@types/tar-fs": "^2.0.4",
+    "tsx": "^4.21.0"
+  }
+}

@@ -1,0 +1,42 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+coverage/
+.next/
+.vercel/
+.turbo/
+.cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Prisma
+backend/prisma/dev.db
+backend/prisma/*.db
+backend/prisma/*.db-journal
+
+# Runtime temp
+tmp/
+temp/
