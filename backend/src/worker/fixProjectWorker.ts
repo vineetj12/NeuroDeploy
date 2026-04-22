@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Worker } from "bullmq";
-import { Redis } from "ioredis";
+import { Redis, type RedisOptions } from "ioredis";
 import Docker from "dockerode";
 import { rm, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -18,8 +18,24 @@ import { fetchProjectById } from "../controller/vercel/vercel.ts";
 import { FIX_PROJECT_QUEUE_NAME, type FixProjectJobData } from "../queue/fixProjectQueue.js";
 import type { VercelProject } from "../types.js";
 
-const connection = new Redis(REDIS_URL, {
+const redisOptions: RedisOptions = {
   maxRetriesPerRequest: null,
+  connectTimeout: 10000,
+  retryStrategy: (times: number) => Math.min(2000 * times, 30000),
+};
+
+if (REDIS_URL.startsWith("rediss://")) {
+  redisOptions.tls = {};
+}
+
+const connection = new Redis(REDIS_URL, redisOptions);
+
+process.on("uncaughtException", (err) => {
+  console.error("[fixProjectWorker] uncaughtException:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("[fixProjectWorker] unhandledRejection:", reason);
 });
 
 type DeploymentEvent = {
