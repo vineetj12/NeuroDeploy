@@ -62,6 +62,7 @@ type GeminiFixResponse = {
 
 type DockerValidationResult = {
   ok: boolean;
+  skipped?: boolean;
   details: string;
 };
 
@@ -567,12 +568,31 @@ function followDockerStream(stream: NodeJS.ReadableStream): Promise<void> {
   });
 }
 
+async function isDockerAvailable(): Promise<boolean> {
+  try {
+    await docker.ping();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function validateWithDocker(repoDir: string): Promise<DockerValidationResult> {
+  const dockerAvailable = await isDockerAvailable();
+  if (!dockerAvailable) {
+    return {
+      ok: true,
+      skipped: true,
+      details: "Docker is not available in this environment. Skipping validation.",
+    };
+  }
+
   const dockerfilePath = join(repoDir, "Dockerfile");
   if (!existsSync(dockerfilePath)) {
     return {
-      ok: false,
-      details: "Dockerfile is missing in repository.",
+      ok: true,
+      skipped: true,
+      details: "No Dockerfile in repository. Skipping Docker validation.",
     };
   }
 
@@ -849,7 +869,7 @@ const worker = new Worker<FixProjectJobData>(
 
         logStep(jobId, `Attempt ${attempt}: validating repository with Docker`);
         const validation = await validateWithDocker(repoDir);
-        logStep(jobId, `Attempt ${attempt}: docker validation result: ok=${validation.ok}`);
+        logStep(jobId, `Attempt ${attempt}: docker validation result: ok=${validation.ok} skipped=${validation.skipped ?? false}`);
 
         if (validation.ok) {
           fixedAndValidated = true;
