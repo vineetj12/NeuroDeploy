@@ -777,9 +777,14 @@ async function pushIfChanged(repoDir: string, branch: string, message: string): 
   if (status.files.length === 0) {
     return false;
   }
+  // Ensure git identity is set in the cloned repo (robust in container environments)
+  try {
+    await runShellCommand(`git config user.email "neurodeploy-bot@users.noreply.github.com"`, repoDir);
+    await runShellCommand(`git config user.name "NeuroDeploy Bot"`, repoDir);
+  } catch (err) {
+    console.warn(`[pushIfChanged] Failed to set git config via shell: ${err}`);
+  }
 
-  await git.addConfig("user.name", "NeuroDeploy Bot");
-  await git.addConfig("user.email", "neurodeploy-bot@users.noreply.github.com");
   await git.add(["."]);
   await git.commit(message);
   await git.push("origin", branch);
