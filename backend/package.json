@@ -25,12 +25,14 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ioredis": "^5.8.1",
+    "jsonwebtoken": "^9.0.0",
     "prisma": "^7.7.0",
     "simple-git": "^3.36.0",
     "tar-fs": "^3.1.2"
   },
   "devDependencies": {
     "@types/dockerode": "^4.0.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/tar-fs": "^2.0.4",
     "tsx": "^4.21.0"
   }

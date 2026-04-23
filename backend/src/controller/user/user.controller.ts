@@ -29,3 +29,9 @@ export const UpdateUser = async (
         data,
     });
 };
+export const CheckUserAndPassword = async (email: string, password:string)=>{
+    const user = await prisma.user.findUnique({
+        where: { email, password },
+    });
+    return user;
+}
