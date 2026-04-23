@@ -404,25 +404,55 @@ function buildFixPrompt(input: {
   ].join("\n");
 }
 
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  label: string,
+  maxRetries = 3,
+  baseDelayMs = 3000
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error: unknown) {
+      const status = axios.isAxiosError(error) ? error.response?.status : null;
+      const isTransient = status === 503 || status === 429 || status === 500 || status === 502;
+
+      if (!isTransient || attempt === maxRetries) {
+        console.error(`[retryWithBackoff] ${label} failed after ${attempt} attempt(s). status=${status}`);
+        throw error;
+      }
+
+      const delay = baseDelayMs * Math.pow(2, attempt - 1);
+      console.log(`[retryWithBackoff] ${label} got ${status}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error(`${label}: exhausted retries`);
+}
+
 async function askGeminiForFix(prompt: string, model: SelectedModelRuntime): Promise<string> {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model.modelName)}:generateContent`;
-  const response = await axios.post(
-    endpoint,
-    {
-      contents: [
-        {
-          parts: [{ text: prompt }],
+
+  const response = await retryWithBackoff(
+    () => axios.post(
+      endpoint,
+      {
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
         },
-      ],
-      generationConfig: {
-        temperature: 0.2,
       },
-    },
-    {
-      params: { key: model.apiKey },
-      headers: { "Content-Type": "application/json" },
-      timeout: 120000,
-    }
+      {
+        params: { key: model.apiKey },
+        headers: { "Content-Type": "application/json" },
+        timeout: 120000,
+      }
+    ),
+    "askGeminiForFix"
   );
 
   return response.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
@@ -433,45 +463,51 @@ async function askOpenAICompatibleForFix(input: {
   model: SelectedModelRuntime;
   baseUrl: string;
 }): Promise<string> {
-  const response = await axios.post(
-    `${input.baseUrl}/chat/completions`,
-    {
-      model: input.model.modelName,
-      temperature: 0.2,
-      messages: [
-        { role: "system", content: "You are a senior software engineer. Return only valid JSON." },
-        { role: "user", content: input.prompt },
-      ],
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${input.model.apiKey}`,
-        "Content-Type": "application/json",
+  const response = await retryWithBackoff(
+    () => axios.post(
+      `${input.baseUrl}/chat/completions`,
+      {
+        model: input.model.modelName,
+        temperature: 0.2,
+        messages: [
+          { role: "system", content: "You are a senior software engineer. Return only valid JSON." },
+          { role: "user", content: input.prompt },
+        ],
       },
-      timeout: 120000,
-    }
+      {
+        headers: {
+          Authorization: `Bearer ${input.model.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 120000,
+      }
+    ),
+    "askOpenAICompatibleForFix"
   );
 
   return response.data?.choices?.[0]?.message?.content ?? "";
 }
 
 async function askAnthropicForFix(prompt: string, model: SelectedModelRuntime): Promise<string> {
-  const response = await axios.post(
-    "https://api.anthropic.com/v1/messages",
-    {
-      model: model.modelName,
-      max_tokens: 4096,
-      temperature: 0.2,
-      messages: [{ role: "user", content: prompt }],
-    },
-    {
-      headers: {
-        "x-api-key": model.apiKey,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
+  const response = await retryWithBackoff(
+    () => axios.post(
+      "https://api.anthropic.com/v1/messages",
+      {
+        model: model.modelName,
+        max_tokens: 4096,
+        temperature: 0.2,
+        messages: [{ role: "user", content: prompt }],
       },
-      timeout: 120000,
-    }
+      {
+        headers: {
+          "x-api-key": model.apiKey,
+          "anthropic-version": "2023-06-01",
+          "Content-Type": "application/json",
+        },
+        timeout: 120000,
+      }
+    ),
+    "askAnthropicForFix"
   );
 
   const parts = response.data?.content;
@@ -577,13 +613,58 @@ async function isDockerAvailable(): Promise<boolean> {
   }
 }
 
-async function validateWithDocker(repoDir: string): Promise<DockerValidationResult> {
+async function runShellCommand(command: string, cwd: string, timeoutMs = 60000): Promise<{ ok: boolean; output: string }> {
+  const { exec } = await import("node:child_process");
+  return new Promise((resolve) => {
+    const child = exec(command, { cwd, timeout: timeoutMs, maxBuffer: 5 * 1024 * 1024 }, (error, stdout, stderr) => {
+      const output = `${stdout}\n${stderr}`.trim();
+      if (error) {
+        resolve({ ok: false, output: output || error.message });
+      } else {
+        resolve({ ok: true, output });
+      }
+    });
+  });
+}
+
+async function validateWithBuildCommand(repoDir: string, project: VercelProject): Promise<DockerValidationResult> {
+  const installCmd = project.installCommand || "npm install";
+  const buildCmd = project.buildCommand || "npm run build";
+
+  console.log(`[validation] Running install: ${installCmd}`);
+  const installResult = await runShellCommand(installCmd, repoDir, 120000);
+  if (!installResult.ok) {
+    return {
+      ok: false,
+      details: `Install failed (${installCmd}):\n${installResult.output.slice(-2000)}`,
+    };
+  }
+  console.log(`[validation] Install succeeded. Running build: ${buildCmd}`);
+  const buildResult = await runShellCommand(buildCmd, repoDir, 120000);
+  if (!buildResult.ok) {
+    return {
+      ok: false,
+      details: `Build failed (${buildCmd}):\n${buildResult.output.slice(-2000)}`,
+    };
+  }
+  console.log(`[validation] Build succeeded.`);
+  return {
+    ok: true,
+    details: `Build validation passed (${buildCmd}).`,
+  };
+}
+
+async function validateWithDocker(repoDir: string, project?: VercelProject): Promise<DockerValidationResult> {
   const dockerAvailable = await isDockerAvailable();
   if (!dockerAvailable) {
+    console.log("[validation] Docker not available. Falling back to build-command validation.");
+    if (project) {
+      return validateWithBuildCommand(repoDir, project);
+    }
     return {
       ok: true,
       skipped: true,
-      details: "Docker is not available in this environment. Skipping validation.",
+      details: "Docker not available and no project metadata for build validation.",
     };
   }
 
