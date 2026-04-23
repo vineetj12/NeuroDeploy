@@ -30,17 +30,18 @@ model AIModel {
   name      String   @unique
   provider  Provider
   isActive  Boolean  @default(true)
+  isSelected Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   users     User[]
-  modelKeys UserModelKey[]
+  modelKey  UserModelKey?
 }
 
 model UserModelKey {
   id        String   @id @default(uuid())
   userId    String
-  modelId   String
+  modelId   String @unique
   apiKey    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

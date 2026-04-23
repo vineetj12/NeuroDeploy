@@ -207,18 +207,18 @@ export type UserModelKeyOrderByWithRelationInput = {
 
 export type UserModelKeyWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  modelId?: string
   userId_modelId?: Prisma.UserModelKeyUserIdModelIdCompoundUniqueInput
   AND?: Prisma.UserModelKeyWhereInput | Prisma.UserModelKeyWhereInput[]
   OR?: Prisma.UserModelKeyWhereInput[]
   NOT?: Prisma.UserModelKeyWhereInput | Prisma.UserModelKeyWhereInput[]
   userId?: Prisma.StringFilter<"UserModelKey"> | string
-  modelId?: Prisma.StringFilter<"UserModelKey"> | string
   apiKey?: Prisma.StringFilter<"UserModelKey"> | string
   createdAt?: Prisma.DateTimeFilter<"UserModelKey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserModelKey"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   model?: Prisma.XOR<Prisma.AIModelScalarRelationFilter, Prisma.AIModelWhereInput>
-}, "id" | "userId_modelId">
+}, "id" | "modelId" | "userId_modelId">
 
 export type UserModelKeyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -250,7 +250,7 @@ export type UserModelKeyCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutModelKeysInput
-  model: Prisma.AIModelCreateNestedOneWithoutModelKeysInput
+  model: Prisma.AIModelCreateNestedOneWithoutModelKeyInput
 }
 
 export type UserModelKeyUncheckedCreateInput = {
@@ -268,7 +268,7 @@ export type UserModelKeyUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutModelKeysNestedInput
-  model?: Prisma.AIModelUpdateOneRequiredWithoutModelKeysNestedInput
+  model?: Prisma.AIModelUpdateOneRequiredWithoutModelKeyNestedInput
 }
 
 export type UserModelKeyUncheckedUpdateInput = {
@@ -313,6 +313,11 @@ export type UserModelKeyListRelationFilter = {
 
 export type UserModelKeyOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type UserModelKeyNullableScalarRelationFilter = {
+  is?: Prisma.UserModelKeyWhereInput | null
+  isNot?: Prisma.UserModelKeyWhereInput | null
 }
 
 export type UserModelKeyUserIdModelIdCompoundUniqueInput = {
@@ -389,46 +394,36 @@ export type UserModelKeyUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.UserModelKeyScalarWhereInput | Prisma.UserModelKeyScalarWhereInput[]
 }
 
-export type UserModelKeyCreateNestedManyWithoutModelInput = {
-  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput> | Prisma.UserModelKeyCreateWithoutModelInput[] | Prisma.UserModelKeyUncheckedCreateWithoutModelInput[]
-  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput | Prisma.UserModelKeyCreateOrConnectWithoutModelInput[]
-  createMany?: Prisma.UserModelKeyCreateManyModelInputEnvelope
-  connect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
+export type UserModelKeyCreateNestedOneWithoutModelInput = {
+  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
+  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput
+  connect?: Prisma.UserModelKeyWhereUniqueInput
 }
 
-export type UserModelKeyUncheckedCreateNestedManyWithoutModelInput = {
-  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput> | Prisma.UserModelKeyCreateWithoutModelInput[] | Prisma.UserModelKeyUncheckedCreateWithoutModelInput[]
-  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput | Prisma.UserModelKeyCreateOrConnectWithoutModelInput[]
-  createMany?: Prisma.UserModelKeyCreateManyModelInputEnvelope
-  connect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
+export type UserModelKeyUncheckedCreateNestedOneWithoutModelInput = {
+  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
+  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput
+  connect?: Prisma.UserModelKeyWhereUniqueInput
 }
 
-export type UserModelKeyUpdateManyWithoutModelNestedInput = {
-  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput> | Prisma.UserModelKeyCreateWithoutModelInput[] | Prisma.UserModelKeyUncheckedCreateWithoutModelInput[]
-  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput | Prisma.UserModelKeyCreateOrConnectWithoutModelInput[]
-  upsert?: Prisma.UserModelKeyUpsertWithWhereUniqueWithoutModelInput | Prisma.UserModelKeyUpsertWithWhereUniqueWithoutModelInput[]
-  createMany?: Prisma.UserModelKeyCreateManyModelInputEnvelope
-  set?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  disconnect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  delete?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  connect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  update?: Prisma.UserModelKeyUpdateWithWhereUniqueWithoutModelInput | Prisma.UserModelKeyUpdateWithWhereUniqueWithoutModelInput[]
-  updateMany?: Prisma.UserModelKeyUpdateManyWithWhereWithoutModelInput | Prisma.UserModelKeyUpdateManyWithWhereWithoutModelInput[]
-  deleteMany?: Prisma.UserModelKeyScalarWhereInput | Prisma.UserModelKeyScalarWhereInput[]
+export type UserModelKeyUpdateOneWithoutModelNestedInput = {
+  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
+  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput
+  upsert?: Prisma.UserModelKeyUpsertWithoutModelInput
+  disconnect?: Prisma.UserModelKeyWhereInput | boolean
+  delete?: Prisma.UserModelKeyWhereInput | boolean
+  connect?: Prisma.UserModelKeyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserModelKeyUpdateToOneWithWhereWithoutModelInput, Prisma.UserModelKeyUpdateWithoutModelInput>, Prisma.UserModelKeyUncheckedUpdateWithoutModelInput>
 }
 
-export type UserModelKeyUncheckedUpdateManyWithoutModelNestedInput = {
-  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput> | Prisma.UserModelKeyCreateWithoutModelInput[] | Prisma.UserModelKeyUncheckedCreateWithoutModelInput[]
-  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput | Prisma.UserModelKeyCreateOrConnectWithoutModelInput[]
-  upsert?: Prisma.UserModelKeyUpsertWithWhereUniqueWithoutModelInput | Prisma.UserModelKeyUpsertWithWhereUniqueWithoutModelInput[]
-  createMany?: Prisma.UserModelKeyCreateManyModelInputEnvelope
-  set?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  disconnect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  delete?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  connect?: Prisma.UserModelKeyWhereUniqueInput | Prisma.UserModelKeyWhereUniqueInput[]
-  update?: Prisma.UserModelKeyUpdateWithWhereUniqueWithoutModelInput | Prisma.UserModelKeyUpdateWithWhereUniqueWithoutModelInput[]
-  updateMany?: Prisma.UserModelKeyUpdateManyWithWhereWithoutModelInput | Prisma.UserModelKeyUpdateManyWithWhereWithoutModelInput[]
-  deleteMany?: Prisma.UserModelKeyScalarWhereInput | Prisma.UserModelKeyScalarWhereInput[]
+export type UserModelKeyUncheckedUpdateOneWithoutModelNestedInput = {
+  create?: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
+  connectOrCreate?: Prisma.UserModelKeyCreateOrConnectWithoutModelInput
+  upsert?: Prisma.UserModelKeyUpsertWithoutModelInput
+  disconnect?: Prisma.UserModelKeyWhereInput | boolean
+  delete?: Prisma.UserModelKeyWhereInput | boolean
+  connect?: Prisma.UserModelKeyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserModelKeyUpdateToOneWithWhereWithoutModelInput, Prisma.UserModelKeyUpdateWithoutModelInput>, Prisma.UserModelKeyUncheckedUpdateWithoutModelInput>
 }
 
 export type UserModelKeyCreateWithoutUserInput = {
@@ -436,7 +431,7 @@ export type UserModelKeyCreateWithoutUserInput = {
   apiKey: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  model: Prisma.AIModelCreateNestedOneWithoutModelKeysInput
+  model: Prisma.AIModelCreateNestedOneWithoutModelKeyInput
 }
 
 export type UserModelKeyUncheckedCreateWithoutUserInput = {
@@ -506,65 +501,15 @@ export type UserModelKeyCreateOrConnectWithoutModelInput = {
   create: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
 }
 
-export type UserModelKeyCreateManyModelInputEnvelope = {
-  data: Prisma.UserModelKeyCreateManyModelInput | Prisma.UserModelKeyCreateManyModelInput[]
-  skipDuplicates?: boolean
-}
-
-export type UserModelKeyUpsertWithWhereUniqueWithoutModelInput = {
-  where: Prisma.UserModelKeyWhereUniqueInput
+export type UserModelKeyUpsertWithoutModelInput = {
   update: Prisma.XOR<Prisma.UserModelKeyUpdateWithoutModelInput, Prisma.UserModelKeyUncheckedUpdateWithoutModelInput>
   create: Prisma.XOR<Prisma.UserModelKeyCreateWithoutModelInput, Prisma.UserModelKeyUncheckedCreateWithoutModelInput>
+  where?: Prisma.UserModelKeyWhereInput
 }
 
-export type UserModelKeyUpdateWithWhereUniqueWithoutModelInput = {
-  where: Prisma.UserModelKeyWhereUniqueInput
+export type UserModelKeyUpdateToOneWithWhereWithoutModelInput = {
+  where?: Prisma.UserModelKeyWhereInput
   data: Prisma.XOR<Prisma.UserModelKeyUpdateWithoutModelInput, Prisma.UserModelKeyUncheckedUpdateWithoutModelInput>
-}
-
-export type UserModelKeyUpdateManyWithWhereWithoutModelInput = {
-  where: Prisma.UserModelKeyScalarWhereInput
-  data: Prisma.XOR<Prisma.UserModelKeyUpdateManyMutationInput, Prisma.UserModelKeyUncheckedUpdateManyWithoutModelInput>
-}
-
-export type UserModelKeyCreateManyUserInput = {
-  id?: string
-  modelId: string
-  apiKey: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type UserModelKeyUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  model?: Prisma.AIModelUpdateOneRequiredWithoutModelKeysNestedInput
-}
-
-export type UserModelKeyUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  modelId?: Prisma.StringFieldUpdateOperationsInput | string
-  apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserModelKeyUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  modelId?: Prisma.StringFieldUpdateOperationsInput | string
-  apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserModelKeyCreateManyModelInput = {
-  id?: string
-  userId: string
-  apiKey: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type UserModelKeyUpdateWithoutModelInput = {
@@ -583,9 +528,33 @@ export type UserModelKeyUncheckedUpdateWithoutModelInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type UserModelKeyUncheckedUpdateManyWithoutModelInput = {
+export type UserModelKeyCreateManyUserInput = {
+  id?: string
+  modelId: string
+  apiKey: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserModelKeyUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  apiKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  model?: Prisma.AIModelUpdateOneRequiredWithoutModelKeyNestedInput
+}
+
+export type UserModelKeyUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  modelId?: Prisma.StringFieldUpdateOperationsInput | string
+  apiKey?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserModelKeyUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  modelId?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string

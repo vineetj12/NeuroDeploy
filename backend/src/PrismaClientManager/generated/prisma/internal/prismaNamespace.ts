@@ -759,6 +759,7 @@ export const AIModelScalarFieldEnum = {
   name: 'name',
   provider: 'provider',
   isActive: 'isActive',
+  isSelected: 'isSelected',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

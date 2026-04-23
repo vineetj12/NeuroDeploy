@@ -29,6 +29,7 @@ export type AIModelMinAggregateOutputType = {
   name: string | null
   provider: $Enums.Provider | null
   isActive: boolean | null
+  isSelected: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type AIModelMaxAggregateOutputType = {
   name: string | null
   provider: $Enums.Provider | null
   isActive: boolean | null
+  isSelected: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,7 @@ export type AIModelCountAggregateOutputType = {
   name: number
   provider: number
   isActive: number
+  isSelected: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +61,7 @@ export type AIModelMinAggregateInputType = {
   name?: true
   provider?: true
   isActive?: true
+  isSelected?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +71,7 @@ export type AIModelMaxAggregateInputType = {
   name?: true
   provider?: true
   isActive?: true
+  isSelected?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +81,7 @@ export type AIModelCountAggregateInputType = {
   name?: true
   provider?: true
   isActive?: true
+  isSelected?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +164,7 @@ export type AIModelGroupByOutputType = {
   name: string
   provider: $Enums.Provider
   isActive: boolean
+  isSelected: boolean
   createdAt: Date
   updatedAt: Date
   _count: AIModelCountAggregateOutputType | null
@@ -188,10 +195,11 @@ export type AIModelWhereInput = {
   name?: Prisma.StringFilter<"AIModel"> | string
   provider?: Prisma.EnumProviderFilter<"AIModel"> | $Enums.Provider
   isActive?: Prisma.BoolFilter<"AIModel"> | boolean
+  isSelected?: Prisma.BoolFilter<"AIModel"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AIModel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AIModel"> | Date | string
   users?: Prisma.UserListRelationFilter
-  modelKeys?: Prisma.UserModelKeyListRelationFilter
+  modelKey?: Prisma.XOR<Prisma.UserModelKeyNullableScalarRelationFilter, Prisma.UserModelKeyWhereInput> | null
 }
 
 export type AIModelOrderByWithRelationInput = {
@@ -199,10 +207,11 @@ export type AIModelOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isSelected?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
-  modelKeys?: Prisma.UserModelKeyOrderByRelationAggregateInput
+  modelKey?: Prisma.UserModelKeyOrderByWithRelationInput
 }
 
 export type AIModelWhereUniqueInput = Prisma.AtLeast<{
@@ -213,10 +222,11 @@ export type AIModelWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AIModelWhereInput | Prisma.AIModelWhereInput[]
   provider?: Prisma.EnumProviderFilter<"AIModel"> | $Enums.Provider
   isActive?: Prisma.BoolFilter<"AIModel"> | boolean
+  isSelected?: Prisma.BoolFilter<"AIModel"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AIModel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AIModel"> | Date | string
   users?: Prisma.UserListRelationFilter
-  modelKeys?: Prisma.UserModelKeyListRelationFilter
+  modelKey?: Prisma.XOR<Prisma.UserModelKeyNullableScalarRelationFilter, Prisma.UserModelKeyWhereInput> | null
 }, "id" | "name">
 
 export type AIModelOrderByWithAggregationInput = {
@@ -224,6 +234,7 @@ export type AIModelOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isSelected?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AIModelCountOrderByAggregateInput
@@ -239,6 +250,7 @@ export type AIModelScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"AIModel"> | string
   provider?: Prisma.EnumProviderWithAggregatesFilter<"AIModel"> | $Enums.Provider
   isActive?: Prisma.BoolWithAggregatesFilter<"AIModel"> | boolean
+  isSelected?: Prisma.BoolWithAggregatesFilter<"AIModel"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AIModel"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AIModel"> | Date | string
 }
@@ -248,10 +260,11 @@ export type AIModelCreateInput = {
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutSelectedModelInput
-  modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutModelInput
+  modelKey?: Prisma.UserModelKeyCreateNestedOneWithoutModelInput
 }
 
 export type AIModelUncheckedCreateInput = {
@@ -259,10 +272,11 @@ export type AIModelUncheckedCreateInput = {
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutSelectedModelInput
-  modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutModelInput
+  modelKey?: Prisma.UserModelKeyUncheckedCreateNestedOneWithoutModelInput
 }
 
 export type AIModelUpdateInput = {
@@ -270,10 +284,11 @@ export type AIModelUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutSelectedModelNestedInput
-  modelKeys?: Prisma.UserModelKeyUpdateManyWithoutModelNestedInput
+  modelKey?: Prisma.UserModelKeyUpdateOneWithoutModelNestedInput
 }
 
 export type AIModelUncheckedUpdateInput = {
@@ -281,10 +296,11 @@ export type AIModelUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutSelectedModelNestedInput
-  modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutModelNestedInput
+  modelKey?: Prisma.UserModelKeyUncheckedUpdateOneWithoutModelNestedInput
 }
 
 export type AIModelCreateManyInput = {
@@ -292,6 +308,7 @@ export type AIModelCreateManyInput = {
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -301,6 +318,7 @@ export type AIModelUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -310,6 +328,7 @@ export type AIModelUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -324,6 +343,7 @@ export type AIModelCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isSelected?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -333,6 +353,7 @@ export type AIModelMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isSelected?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -342,6 +363,7 @@ export type AIModelMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  isSelected?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -375,18 +397,18 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type AIModelCreateNestedOneWithoutModelKeysInput = {
-  create?: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeysInput, Prisma.AIModelUncheckedCreateWithoutModelKeysInput>
-  connectOrCreate?: Prisma.AIModelCreateOrConnectWithoutModelKeysInput
+export type AIModelCreateNestedOneWithoutModelKeyInput = {
+  create?: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeyInput, Prisma.AIModelUncheckedCreateWithoutModelKeyInput>
+  connectOrCreate?: Prisma.AIModelCreateOrConnectWithoutModelKeyInput
   connect?: Prisma.AIModelWhereUniqueInput
 }
 
-export type AIModelUpdateOneRequiredWithoutModelKeysNestedInput = {
-  create?: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeysInput, Prisma.AIModelUncheckedCreateWithoutModelKeysInput>
-  connectOrCreate?: Prisma.AIModelCreateOrConnectWithoutModelKeysInput
-  upsert?: Prisma.AIModelUpsertWithoutModelKeysInput
+export type AIModelUpdateOneRequiredWithoutModelKeyNestedInput = {
+  create?: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeyInput, Prisma.AIModelUncheckedCreateWithoutModelKeyInput>
+  connectOrCreate?: Prisma.AIModelCreateOrConnectWithoutModelKeyInput
+  upsert?: Prisma.AIModelUpsertWithoutModelKeyInput
   connect?: Prisma.AIModelWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AIModelUpdateToOneWithWhereWithoutModelKeysInput, Prisma.AIModelUpdateWithoutModelKeysInput>, Prisma.AIModelUncheckedUpdateWithoutModelKeysInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AIModelUpdateToOneWithWhereWithoutModelKeyInput, Prisma.AIModelUpdateWithoutModelKeyInput>, Prisma.AIModelUncheckedUpdateWithoutModelKeyInput>
 }
 
 export type AIModelCreateWithoutUsersInput = {
@@ -394,9 +416,10 @@ export type AIModelCreateWithoutUsersInput = {
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutModelInput
+  modelKey?: Prisma.UserModelKeyCreateNestedOneWithoutModelInput
 }
 
 export type AIModelUncheckedCreateWithoutUsersInput = {
@@ -404,9 +427,10 @@ export type AIModelUncheckedCreateWithoutUsersInput = {
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutModelInput
+  modelKey?: Prisma.UserModelKeyUncheckedCreateNestedOneWithoutModelInput
 }
 
 export type AIModelCreateOrConnectWithoutUsersInput = {
@@ -430,9 +454,10 @@ export type AIModelUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  modelKeys?: Prisma.UserModelKeyUpdateManyWithoutModelNestedInput
+  modelKey?: Prisma.UserModelKeyUpdateOneWithoutModelNestedInput
 }
 
 export type AIModelUncheckedUpdateWithoutUsersInput = {
@@ -440,62 +465,67 @@ export type AIModelUncheckedUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutModelNestedInput
+  modelKey?: Prisma.UserModelKeyUncheckedUpdateOneWithoutModelNestedInput
 }
 
-export type AIModelCreateWithoutModelKeysInput = {
+export type AIModelCreateWithoutModelKeyInput = {
   id?: string
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutSelectedModelInput
 }
 
-export type AIModelUncheckedCreateWithoutModelKeysInput = {
+export type AIModelUncheckedCreateWithoutModelKeyInput = {
   id?: string
   name: string
   provider: $Enums.Provider
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutSelectedModelInput
 }
 
-export type AIModelCreateOrConnectWithoutModelKeysInput = {
+export type AIModelCreateOrConnectWithoutModelKeyInput = {
   where: Prisma.AIModelWhereUniqueInput
-  create: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeysInput, Prisma.AIModelUncheckedCreateWithoutModelKeysInput>
+  create: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeyInput, Prisma.AIModelUncheckedCreateWithoutModelKeyInput>
 }
 
-export type AIModelUpsertWithoutModelKeysInput = {
-  update: Prisma.XOR<Prisma.AIModelUpdateWithoutModelKeysInput, Prisma.AIModelUncheckedUpdateWithoutModelKeysInput>
-  create: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeysInput, Prisma.AIModelUncheckedCreateWithoutModelKeysInput>
+export type AIModelUpsertWithoutModelKeyInput = {
+  update: Prisma.XOR<Prisma.AIModelUpdateWithoutModelKeyInput, Prisma.AIModelUncheckedUpdateWithoutModelKeyInput>
+  create: Prisma.XOR<Prisma.AIModelCreateWithoutModelKeyInput, Prisma.AIModelUncheckedCreateWithoutModelKeyInput>
   where?: Prisma.AIModelWhereInput
 }
 
-export type AIModelUpdateToOneWithWhereWithoutModelKeysInput = {
+export type AIModelUpdateToOneWithWhereWithoutModelKeyInput = {
   where?: Prisma.AIModelWhereInput
-  data: Prisma.XOR<Prisma.AIModelUpdateWithoutModelKeysInput, Prisma.AIModelUncheckedUpdateWithoutModelKeysInput>
+  data: Prisma.XOR<Prisma.AIModelUpdateWithoutModelKeyInput, Prisma.AIModelUncheckedUpdateWithoutModelKeyInput>
 }
 
-export type AIModelUpdateWithoutModelKeysInput = {
+export type AIModelUpdateWithoutModelKeyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutSelectedModelNestedInput
 }
 
-export type AIModelUncheckedUpdateWithoutModelKeysInput = {
+export type AIModelUncheckedUpdateWithoutModelKeyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumProviderFieldUpdateOperationsInput | $Enums.Provider
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSelected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutSelectedModelNestedInput
@@ -508,12 +538,10 @@ export type AIModelUncheckedUpdateWithoutModelKeysInput = {
 
 export type AIModelCountOutputType = {
   users: number
-  modelKeys: number
 }
 
 export type AIModelCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | AIModelCountOutputTypeCountUsersArgs
-  modelKeys?: boolean | AIModelCountOutputTypeCountModelKeysArgs
 }
 
 /**
@@ -533,23 +561,17 @@ export type AIModelCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.UserWhereInput
 }
 
-/**
- * AIModelCountOutputType without action
- */
-export type AIModelCountOutputTypeCountModelKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserModelKeyWhereInput
-}
-
 
 export type AIModelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   provider?: boolean
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.AIModel$usersArgs<ExtArgs>
-  modelKeys?: boolean | Prisma.AIModel$modelKeysArgs<ExtArgs>
+  modelKey?: boolean | Prisma.AIModel$modelKeyArgs<ExtArgs>
   _count?: boolean | Prisma.AIModelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aIModel"]>
 
@@ -558,6 +580,7 @@ export type AIModelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   provider?: boolean
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["aIModel"]>
@@ -567,6 +590,7 @@ export type AIModelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   provider?: boolean
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["aIModel"]>
@@ -576,14 +600,15 @@ export type AIModelSelectScalar = {
   name?: boolean
   provider?: boolean
   isActive?: boolean
+  isSelected?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AIModelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "provider" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["aIModel"]>
+export type AIModelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "provider" | "isActive" | "isSelected" | "createdAt" | "updatedAt", ExtArgs["result"]["aIModel"]>
 export type AIModelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.AIModel$usersArgs<ExtArgs>
-  modelKeys?: boolean | Prisma.AIModel$modelKeysArgs<ExtArgs>
+  modelKey?: boolean | Prisma.AIModel$modelKeyArgs<ExtArgs>
   _count?: boolean | Prisma.AIModelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AIModelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -593,13 +618,14 @@ export type $AIModelPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "AIModel"
   objects: {
     users: Prisma.$UserPayload<ExtArgs>[]
-    modelKeys: Prisma.$UserModelKeyPayload<ExtArgs>[]
+    modelKey: Prisma.$UserModelKeyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     provider: $Enums.Provider
     isActive: boolean
+    isSelected: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["aIModel"]>
@@ -997,7 +1023,7 @@ readonly fields: AIModelFieldRefs;
 export interface Prisma__AIModelClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.AIModel$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AIModel$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  modelKeys<T extends Prisma.AIModel$modelKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AIModel$modelKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserModelKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  modelKey<T extends Prisma.AIModel$modelKeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AIModel$modelKeyArgs<ExtArgs>>): Prisma.Prisma__UserModelKeyClient<runtime.Types.Result.GetResult<Prisma.$UserModelKeyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1031,6 +1057,7 @@ export interface AIModelFieldRefs {
   readonly name: Prisma.FieldRef<"AIModel", 'String'>
   readonly provider: Prisma.FieldRef<"AIModel", 'Provider'>
   readonly isActive: Prisma.FieldRef<"AIModel", 'Boolean'>
+  readonly isSelected: Prisma.FieldRef<"AIModel", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"AIModel", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AIModel", 'DateTime'>
 }
@@ -1450,9 +1477,9 @@ export type AIModel$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * AIModel.modelKeys
+ * AIModel.modelKey
  */
-export type AIModel$modelKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AIModel$modelKeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the UserModelKey
    */
@@ -1466,11 +1493,6 @@ export type AIModel$modelKeysArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.UserModelKeyInclude<ExtArgs> | null
   where?: Prisma.UserModelKeyWhereInput
-  orderBy?: Prisma.UserModelKeyOrderByWithRelationInput | Prisma.UserModelKeyOrderByWithRelationInput[]
-  cursor?: Prisma.UserModelKeyWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserModelKeyScalarFieldEnum | Prisma.UserModelKeyScalarFieldEnum[]
 }
 
 /**
