@@ -778,6 +778,8 @@ async function pushIfChanged(repoDir: string, branch: string, message: string): 
     return false;
   }
 
+  await git.addConfig("user.name", "NeuroDeploy Bot");
+  await git.addConfig("user.email", "neurodeploy-bot@users.noreply.github.com");
   await git.add(["."]);
   await git.commit(message);
   await git.push("origin", branch);
