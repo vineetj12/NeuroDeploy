@@ -1,11 +1,30 @@
 import router from 'express';
 import { fetchProjectById, fetchProjects, fixproject } from '../controller/vercel/vercel.ts';
 import { handleVercelWebhook } from '../controller/vercel/vercelwebhook.ts';
+import { prisma } from '../PrismaClientManager/index.ts';
 
 export const vercelRouter=router.Router(); 
-vercelRouter.get("/projects",async (req,res)=>{
+
+async function getUserVercelToken(userId: string): Promise<string> {
+    const credential = await prisma.userCredential.findFirst({
+        where: { userId, provider: "VERCEL" },
+        orderBy: { updatedAt: "desc" },
+    });
+    if (!credential?.secret) {
+        throw new Error("Vercel credential not found for this user.");
+    }
+    return credential.secret;
+}
+
+vercelRouter.get("/projects", async (req, res) => {
+    const userId = typeof req.query.userId === "string" ? req.query.userId.trim() : "";
+    if (!userId) {
+        res.status(400).json({ error: "userId query param is required" });
+        return;
+    }
     try {
-        const projects=await fetchProjects();
+        const vercelToken = await getUserVercelToken(userId);
+        const projects = await fetchProjects(vercelToken);
         console.log("Fetched projects:", projects);
         res.json(projects);
     } catch (error) {
@@ -13,10 +32,17 @@ vercelRouter.get("/projects",async (req,res)=>{
         res.status(500).json({ error: "Failed to fetch projects" });
     }
 });
-vercelRouter.get("/projects/:id",async (req,res)=>{
-    const projectId=req.params.id;
+
+vercelRouter.get("/projects/:id", async (req, res) => {
+    const projectId = req.params.id;
+    const userId = typeof req.query.userId === "string" ? req.query.userId.trim() : "";
+    if (!userId) {
+        res.status(400).json({ error: "userId query param is required" });
+        return;
+    }
     try {
-        const project=await fetchProjectById(projectId);
+        const vercelToken = await getUserVercelToken(userId);
+        const project = await fetchProjectById(projectId, vercelToken);
         const latest = project.latestDeployments?.[0];
         const failed = latest?.readyState !== "READY";
         const latestDeploymentId = latest?.id ?? null;
@@ -40,7 +66,8 @@ vercelRouter.post("/projects/:id/fix", async (req, res) => {
         return;
     }
     try {
-        const project = await fetchProjectById(projectId);
+        const vercelToken = await getUserVercelToken(userId);
+        const project = await fetchProjectById(projectId, vercelToken);
         const latestDeploymentId = project.latestDeployments?.[0]?.id ?? null;
         await fixproject(projectId, latestDeploymentId, userId);
 
