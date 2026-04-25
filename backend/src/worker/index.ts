@@ -1,7 +1,8 @@
 import http from "node:http";
-import { FIX_PROJECT_QUEUE_NAME } from "../queue/fixProjectQueue.js";
+import { FIX_PROJECT_QUEUE_NAME } from "../queue/fixProjectQueue.ts";
+import "./fixProjectWorker.ts";
 
-const port = Number(process.env.PORT) || 10000;
+const port = Number(process.env.WORKER_PORT) || 10000;
 
 const server = http.createServer((req, res) => {
   if (req.url === "/health") {
@@ -24,4 +25,4 @@ server.listen(port, () => {
   console.log(`[fixProjectWorker] health server listening on port ${port}`);
 });
 
-await import("./fixProjectWorker.ts");
+

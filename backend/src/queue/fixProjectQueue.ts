@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 import { Redis } from "ioredis";
-import { REDIS_URL } from "../envdata/data.js";
+import { REDIS_URL } from "../envdata/data.ts";
 
 export const FIX_PROJECT_QUEUE_NAME = "fix-project-queue";
 

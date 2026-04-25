@@ -1,0 +1,83 @@
+.dashboard-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.stat-skeleton {
+  color: var(--text-secondary);
+}
+
+.mt-8 {
+  margin-top: 32px;
+}
+
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-success {
+  color: var(--status-success);
+}
+
+.mt-8 {
+  margin-top: 32px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.project-name {
+  font-family: var(--font-code);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.activity-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
