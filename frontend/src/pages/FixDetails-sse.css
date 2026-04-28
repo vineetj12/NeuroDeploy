@@ -1,0 +1,28 @@
+/* FixDetails.css Additions */
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--status-success);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px var(--status-success);
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.log-ts {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-right: 8px;
+  user-select: none;
+}
+
+.text-warning {
+  color: var(--status-warning) !important;
+}

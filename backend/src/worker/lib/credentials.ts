@@ -49,6 +49,15 @@ async function resolveModelRuntime(userId: string): Promise<SelectedModelRuntime
   });
 
   if (!modelKey?.apiKey || modelKey.apiKey.trim() === "") {
+    // If the user selected a model but doesn't have a stored key, fall back to GEMINI env key
+    if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== "") {
+      return {
+        provider: "GEMINI",
+        modelName: GEMINI_MODEL,
+        apiKey: GEMINI_API_KEY,
+      };
+    }
+
     throw new Error(`API key missing for selected model ${user.selectedModel.name}.`);
   }
 

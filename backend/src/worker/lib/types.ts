@@ -14,12 +14,18 @@ export type DeploymentEvent = {
 export type GeminiFileChange = {
   path: string;
   content: string;
+  rootCause?: string;
+  fixStrategy?: string;
+  confidenceScore?: number;
+  alternativesConsidered?: string[];
 };
 
 export type GeminiFixResponse = {
   summary?: string;
   files?: GeminiFileChange[];
   commitMessage?: string;
+  overallSummary?: string;
+  estimatedRiskLevel?: 'LOW' | 'MEDIUM' | 'HIGH';
 };
 
 export type DockerValidationResult = {

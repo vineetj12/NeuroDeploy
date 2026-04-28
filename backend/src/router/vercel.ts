@@ -107,6 +107,40 @@ vercelRouter.get("/jobs/:jobId/status", authMiddleware, async (req: Authenticate
   }
 });
 
+// ── GET /api/vercel/jobs/:jobId/stream ─────────────────────────────────────
+
+vercelRouter.get("/jobs/:jobId/stream", authMiddleware, async (req: AuthenticatedRequest, res) => {
+  const jobId = req.params.jobId as string;
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  // Send persisted logs first
+  try {
+    const logs = await _queueRedis.lrange(`job:${jobId}:logs`, 0, -1);
+    for (const log of logs) {
+      res.write(`data: ${log}\n\n`);
+    }
+  } catch (error) {
+    console.error("[vercel/stream] Error fetching persisted logs:", error);
+  }
+
+  // Subscribe to live logs
+  const sub = _queueRedis.duplicate();
+  await sub.subscribe(`job:${jobId}:log`);
+
+  sub.on("message", (channel, message) => {
+    res.write(`data: ${message}\n\n`);
+  });
+
+  req.on("close", () => {
+    sub.unsubscribe();
+    sub.quit();
+  });
+});
+
 // ── POST /api/vercel/webhook ─────────────────────────────────────────────────
 
 vercelRouter.post("/webhook", async (req, res) => {

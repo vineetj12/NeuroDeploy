@@ -23,6 +23,7 @@ model User {
   selectedModel AIModel?         @relation(fields: [selectedModelId], references: [id], onDelete: SetNull)
   modelKeys     UserModelKey[]
   credentials   UserCredential[]
+  fixJobs       FixJob[]
 }
 
 model AIModel {
@@ -64,6 +65,56 @@ model UserCredential {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, provider, name])
+}
+
+model FixJob {
+  id              String         @id @default(uuid())
+  userId          String
+  projectId       String
+  projectName     String?
+  deploymentId    String?
+  bullmqJobId     String?
+  status          FixJobStatus   @default(QUEUED)
+  errorCategory   ErrorCategory  @default(UNKNOWN)
+  errorMessage    String?
+  aiProvider      String?
+  aiModel         String?
+  confidenceScore Float?
+  riskLevel       String?
+  durationMs      Int?
+  filesChanged    Int            @default(0)
+  fixedFiles      String[]       @default([])
+  prUrl           String?
+  startedAt       DateTime       @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+}
+
+enum FixJobStatus {
+  QUEUED
+  ANALYZING
+  VALIDATING
+  PR_CREATED
+  FAILED
+}
+
+enum ErrorCategory {
+  BUILD_ERROR
+  TYPE_ERROR
+  SYNTAX_ERROR
+  MISSING_DEPENDENCY
+  MISSING_ENV_VAR
+  CONFIG_ERROR
+  DEPENDENCY_CONFLICT
+  RUNTIME_ERROR
+  UNKNOWN
 }
 
 enum Provider {

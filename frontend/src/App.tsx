@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import { Activity, FolderGit2, Settings, TerminalSquare, LogOut } from 'lucide-react';
+import { Activity, FolderGit2, Settings, TerminalSquare, LogOut, BarChart3 } from 'lucide-react';
 import './AppLayout.css';
 
 import Dashboard from './pages/Dashboard';
@@ -8,6 +8,7 @@ import FixDetails from './pages/FixDetails';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 // ── Auth Guard ───────────────────────────────────────────────────────────────
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,7 @@ function AppShell() {
     { path: '/', label: 'Dashboard', icon: Activity },
     { path: '/projects', label: 'Projects', icon: FolderGit2 },
     { path: '/fixes', label: 'Fix Jobs', icon: TerminalSquare },
+    { path: '/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -81,6 +83,7 @@ function AppShell() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/fixes" element={<FixDetails />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </div>

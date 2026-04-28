@@ -73,11 +73,26 @@ export const triggerFixJob = async (projectId: string): Promise<string> => {
 
 // ── Job Status ────────────────────────────────────────────────────────────────
 
+export interface AIPatchReasoning {
+  filePath: string;
+  rootCause: string;
+  fixStrategy: string;
+  confidenceScore: number;
+  alternativesConsidered: string[];
+}
+
+export interface AIReasoning {
+  overallSummary?: string;
+  estimatedRiskLevel?: 'LOW' | 'MEDIUM' | 'HIGH';
+  patches?: AIPatchReasoning[];
+}
+
 export interface JobProgress {
   step: 'error_detected' | 'ai_analyzing' | 'validating' | 'pr_created' | 'failed' | 'no_error';
   logs: string[];
   diff: string | null;
   prUrl: string | null;
+  aiReasoning?: AIReasoning;
 }
 
 export interface JobStatus {
@@ -139,4 +154,27 @@ export const updateUser = async (data: { selectedModelId?: string }): Promise<vo
   });
   if (res.status === 401) throw new Error('UNAUTHORIZED');
   if (!res.ok) throw new Error('Failed to update user');
+};
+
+// ── ANALYTICS ───────────────────────────────────────────────────────────────
+
+export const getAnalyticsSummary = async () => {
+  const res = await fetch(`${BASE}/analytics/summary`, { headers: authHeaders() });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) throw new Error("Failed to fetch analytics summary");
+  return res.json();
+};
+
+export const getAnalyticsTimeline = async (days = 30) => {
+  const res = await fetch(`${BASE}/analytics/timeline?days=${days}`, { headers: authHeaders() });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) throw new Error("Failed to fetch analytics timeline");
+  return res.json();
+};
+
+export const getAnalyticsFiles = async (limit = 20) => {
+  const res = await fetch(`${BASE}/analytics/files?limit=${limit}`, { headers: authHeaders() });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) throw new Error("Failed to fetch analytics files");
+  return res.json();
 };

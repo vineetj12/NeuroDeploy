@@ -17,6 +17,8 @@ import {
 import { buildRepositorySnapshot, applyGeminiChanges } from "./lib/repo.ts";
 import { validateWithDocker } from "./lib/docker.ts";
 import { askSelectedModelForFix } from "./lib/ai.ts";
+import { createFixJob, updateFixJobStatus, completeFixJob } from "../services/fixJob.service.ts";
+import { classifyError } from "../services/errorClassifier.ts";
 
 const redisOptions: RedisOptions = {
   maxRetriesPerRequest: null,
@@ -38,31 +40,52 @@ process.on("unhandledRejection", (reason) => {
   console.error("[fixProjectWorker] unhandledRejection:", reason);
 });
 
-function logStep(jobId: string, step: string): void {
-  console.log(`[fixProjectWorker][job=${jobId}] ${step}`);
+async function publishLog(jobId: string, message: string, level = "info"): Promise<void> {
+  const entry = JSON.stringify({ message, level, ts: Date.now() });
+  await connection.publish(`job:${jobId}:log`, entry);
+  await connection.rpush(`job:${jobId}:logs`, entry);
+  await connection.expire(`job:${jobId}:logs`, 86400); // 24h
+  console.log(`[fixProjectWorker][job=${jobId}] ${message}`);
 }
 
-const worker = new Worker<FixProjectJobData>(
+  const worker = new Worker<FixProjectJobData>(
   FIX_PROJECT_QUEUE_NAME,
   async (job) => {
     const { projectId, latestDeploymentId, userId } = job.data;
     const jobId = String(job.id ?? "unknown");
-    logStep(jobId, "Starting auto-fix workflow");
+    const startTime = Date.now();
+    let dbFixJobId: string | null = null;
+    
+    await publishLog(jobId, "Starting auto-fix workflow");
 
     if (!userId || userId.trim() === "") {
-      logStep(jobId, "Skipping job because userId is missing (required for DB-backed credentials).");
+      await publishLog(jobId, "Skipping job because userId is missing (required for DB-backed credentials).", "error");
       return;
     }
 
     const runtime = await loadWorkerRuntimeCredentials(userId);
     const project = await fetchProjectById(projectId, runtime.vercelToken);
-    const buildCommand = project.buildCommand ?? null;
 
     let deploymentError = latestDeploymentId
       ? await fetchDeploymentError(latestDeploymentId, runtime.vercelToken)
       : "No deployment id provided.";
 
-    logStep(jobId, `deploymentError=${deploymentError ?? "<none>"}`);
+    await publishLog(jobId, `deploymentError=${deploymentError ?? "<none>"}`);
+
+    // Create DB Record
+    const errorCategory = classifyError(deploymentError ?? "");
+    const fixJobRecord = await createFixJob({
+      userId,
+      projectId,
+      projectName: project.name,
+      deploymentId: latestDeploymentId ?? undefined,
+      bullmqJobId: jobId,
+      errorCategory,
+      errorMessage: deploymentError ?? undefined,
+      aiProvider: runtime.model.provider,
+      aiModel: runtime.model.modelName,
+    });
+    dbFixJobId = fixJobRecord.id;
 
     // ── Step 1: Error Detected ───────────────────────────────────────────────
     await job.updateProgress({
@@ -73,12 +96,16 @@ const worker = new Worker<FixProjectJobData>(
     });
 
     if (!deploymentError) {
+      await publishLog(jobId, "No deployment error detected. Nothing to fix.");
       await job.updateProgress({
         step: "no_error",
         logs: ["No deployment error detected. Nothing to fix."],
         diff: null,
         prUrl: null,
       });
+      if (dbFixJobId) {
+        await completeFixJob(dbFixJobId, { status: "FAILED", durationMs: Date.now() - startTime });
+      }
       return;
     }
 
@@ -86,9 +113,11 @@ const worker = new Worker<FixProjectJobData>(
     let branch = "main";
     let featureBranch = "";
     let lastDiff: string | null = null;
+    let finalReasoning: any = null;
 
     try {
       // ── Step 2: AI Analyzing ─────────────────────────────────────────────
+      await publishLog(jobId, `📦 Cloning GitHub repository for project "${project.name}"...`);
       await job.updateProgress({
         step: "ai_analyzing",
         logs: [`[NeuroDeploy] Cloning GitHub repository for project "${project.name}"...`],
@@ -96,20 +125,21 @@ const worker = new Worker<FixProjectJobData>(
         prUrl: null,
       });
 
-      logStep(jobId, "Cloning linked GitHub repository");
       const cloneResult = await cloneProjectRepository(jobId, project, runtime.githubToken);
       repoDir = cloneResult.repoDir;
       branch = cloneResult.branch;
-      logStep(jobId, `Repository cloned at ${repoDir}`);
+      await publishLog(jobId, `📁 Repository cloned at ${repoDir}`);
 
       featureBranch = buildFixBranchName(projectId, jobId);
-      logStep(jobId, `Creating feature branch ${featureBranch}`);
       await checkoutBranch(repoDir, featureBranch);
 
       let fixedAndValidated = false;
 
       for (let attempt = 1; attempt <= 5; attempt += 1) {
-        logStep(jobId, `Attempt ${attempt}: preparing repository snapshot for ${runtime.model.provider}`);
+        if (dbFixJobId) {
+          await updateFixJobStatus(dbFixJobId, "ANALYZING");
+        }
+        await publishLog(jobId, `🤖 Attempt ${attempt}: Sending codebase to ${runtime.model.provider} for analysis...`);
 
         await job.updateProgress({
           step: "ai_analyzing",
@@ -121,8 +151,6 @@ const worker = new Worker<FixProjectJobData>(
         });
 
         const repoSnapshot = await buildRepositorySnapshot(repoDir);
-        logStep(jobId, `Attempt ${attempt}: sending repository + deploymentError to ${runtime.model.provider}`);
-
         const aiFix = await askSelectedModelForFix({
           repoSnapshot,
           deploymenterrro: deploymentError,
@@ -131,10 +159,10 @@ const worker = new Worker<FixProjectJobData>(
         });
 
         const plannedChanges = aiFix.files ?? [];
-        logStep(jobId, `Attempt ${attempt}: AI responded. files=${plannedChanges.length}`);
+        await publishLog(jobId, `🧠 Attempt ${attempt}: AI responded with ${plannedChanges.length} file changes.`);
 
         if (plannedChanges.length === 0) {
-          logStep(jobId, `Attempt ${attempt}: no code changes proposed by AI model.`);
+          await publishLog(jobId, `⚠️ Attempt ${attempt}: no code changes proposed by AI model.`, "warn");
           break;
         }
 
@@ -143,10 +171,26 @@ const worker = new Worker<FixProjectJobData>(
           .map((f: { path: string; content: string }) => `// ── File: ${f.path} ──\n${f.content}`)
           .join("\n\n");
 
+        // Build AI reasoning data for the frontend
+        finalReasoning = {
+          overallSummary: aiFix.overallSummary ?? aiFix.summary ?? undefined,
+          estimatedRiskLevel: aiFix.estimatedRiskLevel ?? undefined,
+          patches: plannedChanges.map((f) => ({
+            filePath: f.path,
+            rootCause: f.rootCause ?? "Not provided",
+            fixStrategy: f.fixStrategy ?? "Not provided",
+            confidenceScore: typeof f.confidenceScore === "number" ? f.confidenceScore : 0,
+            alternativesConsidered: Array.isArray(f.alternativesConsidered) ? f.alternativesConsidered : [],
+          })),
+        };
+
         const changedCount = await applyGeminiChanges(repoDir, plannedChanges);
-        logStep(jobId, `Attempt ${attempt}: applied ${changedCount} file changes`);
+        await publishLog(jobId, `💾 Attempt ${attempt}: applied ${changedCount} file changes`);
 
         // ── Step 3: Validating ───────────────────────────────────────────────
+        if (dbFixJobId) {
+          await updateFixJobStatus(dbFixJobId, "VALIDATING");
+        }
         await job.updateProgress({
           step: "validating",
           logs: [
@@ -156,11 +200,12 @@ const worker = new Worker<FixProjectJobData>(
           ].filter(Boolean),
           diff: lastDiff,
           prUrl: null,
+          aiReasoning: finalReasoning,
         });
 
-        logStep(jobId, `Attempt ${attempt}: validating repository with Docker`);
+        await publishLog(jobId, `🐳 Attempt ${attempt}: validating repository with Docker...`);
         const validation = await validateWithDocker(repoDir, project);
-        logStep(jobId, `Attempt ${attempt}: docker result: ok=${validation.ok}`);
+        await publishLog(jobId, `🐳 Attempt ${attempt}: docker validation ${validation.ok ? "PASSED ✅" : "FAILED ❌"}`);
 
         if (validation.ok) {
           fixedAndValidated = true;
@@ -170,7 +215,7 @@ const worker = new Worker<FixProjectJobData>(
             ...(aiFix.summary ? { summary: aiFix.summary } : {}),
           });
 
-          logStep(jobId, "Validation passed. Pushing changes...");
+          await publishLog(jobId, "🚀 Validation passed. Pushing changes...");
           const pushed = await pushIfChanged(repoDir, featureBranch, commitMessage);
 
           let prUrl: string | null = null;
@@ -193,10 +238,23 @@ const worker = new Worker<FixProjectJobData>(
                   `**Validation:** ${validation.details}`,
                 ].join("\n"),
               });
-              logStep(jobId, prUrl ? `PR created: ${prUrl}` : "PR creation returned no URL");
+              await publishLog(jobId, prUrl ? `🎉 PR created: ${prUrl}` : "⚠️ PR creation returned no URL");
             } else {
-              logStep(jobId, "Skipped PR: missing repo owner/name metadata.");
+              await publishLog(jobId, "⚠️ Skipped PR: missing repo owner/name metadata.", "warn");
             }
+          }
+
+          if (dbFixJobId) {
+            const avgConfidence = finalReasoning?.patches?.reduce((acc: number, p: any) => acc + p.confidenceScore, 0) / (finalReasoning?.patches?.length || 1);
+            await completeFixJob(dbFixJobId, {
+              status: "PR_CREATED",
+              prUrl,
+              confidenceScore: avgConfidence,
+              riskLevel: finalReasoning?.estimatedRiskLevel,
+              filesChanged: finalReasoning?.patches?.length ?? 0,
+              fixedFiles: finalReasoning?.patches?.map((p: any) => p.filePath) ?? [],
+              durationMs: Date.now() - startTime,
+            });
           }
 
           // ── Step 4: PR Created ─────────────────────────────────────────────
@@ -209,17 +267,26 @@ const worker = new Worker<FixProjectJobData>(
             ],
             diff: lastDiff,
             prUrl,
+            aiReasoning: finalReasoning,
           });
 
           break;
         }
 
         deploymentError = `Docker validation failed after AI fix. Details:\n${validation.details}`;
-        logStep(jobId, `Attempt ${attempt}: validation failed; retrying...`);
+        await publishLog(jobId, `❌ Attempt ${attempt}: validation failed; retrying...`, "warn");
       }
 
       if (!fixedAndValidated) {
-        logStep(jobId, "Auto-fix workflow finished without a validated fix.");
+        await publishLog(jobId, "❌ Auto-fix workflow finished without a validated fix.", "error");
+        
+        if (dbFixJobId) {
+          await completeFixJob(dbFixJobId, {
+            status: "FAILED",
+            durationMs: Date.now() - startTime,
+          });
+        }
+        
         await job.updateProgress({
           step: "failed",
           logs: ["[NeuroDeploy] All 5 attempts exhausted. Could not produce a validated fix."],
@@ -229,10 +296,10 @@ const worker = new Worker<FixProjectJobData>(
       }
     } finally {
       if (repoDir) {
-        logStep(jobId, "Cleaning up cloned repository directory");
+        await publishLog(jobId, "🧹 Cleaning up cloned repository directory...");
         await rm(repoDir, { recursive: true, force: true });
       }
-      logStep(jobId, "Workflow complete");
+      await publishLog(jobId, "✅ Workflow complete.");
     }
   },
   { connection }

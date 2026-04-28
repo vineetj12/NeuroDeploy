@@ -37,3 +37,8 @@ export type UserModelKey = Prisma.UserModelKeyModel
  * 
  */
 export type UserCredential = Prisma.UserCredentialModel
+/**
+ * Model FixJob
+ * 
+ */
+export type FixJob = Prisma.FixJobModel

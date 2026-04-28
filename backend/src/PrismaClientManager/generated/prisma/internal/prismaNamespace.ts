@@ -387,7 +387,8 @@ export const ModelName = {
   User: 'User',
   AIModel: 'AIModel',
   UserModelKey: 'UserModelKey',
-  UserCredential: 'UserCredential'
+  UserCredential: 'UserCredential',
+  FixJob: 'FixJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "aIModel" | "userModelKey" | "userCredential"
+    modelProps: "user" | "aIModel" | "userModelKey" | "userCredential" | "fixJob"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -703,6 +704,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FixJob: {
+      payload: Prisma.$FixJobPayload<ExtArgs>
+      fields: Prisma.FixJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FixJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FixJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        findFirst: {
+          args: Prisma.FixJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FixJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        findMany: {
+          args: Prisma.FixJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>[]
+        }
+        create: {
+          args: Prisma.FixJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        createMany: {
+          args: Prisma.FixJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FixJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>[]
+        }
+        delete: {
+          args: Prisma.FixJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        update: {
+          args: Prisma.FixJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.FixJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FixJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FixJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.FixJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FixJobPayload>
+        }
+        aggregate: {
+          args: Prisma.FixJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFixJob>
+        }
+        groupBy: {
+          args: Prisma.FixJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FixJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FixJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FixJobCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -790,6 +865,33 @@ export const UserCredentialScalarFieldEnum = {
 } as const
 
 export type UserCredentialScalarFieldEnum = (typeof UserCredentialScalarFieldEnum)[keyof typeof UserCredentialScalarFieldEnum]
+
+
+export const FixJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  projectName: 'projectName',
+  deploymentId: 'deploymentId',
+  bullmqJobId: 'bullmqJobId',
+  status: 'status',
+  errorCategory: 'errorCategory',
+  errorMessage: 'errorMessage',
+  aiProvider: 'aiProvider',
+  aiModel: 'aiModel',
+  confidenceScore: 'confidenceScore',
+  riskLevel: 'riskLevel',
+  durationMs: 'durationMs',
+  filesChanged: 'filesChanged',
+  fixedFiles: 'fixedFiles',
+  prUrl: 'prUrl',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FixJobScalarFieldEnum = (typeof FixJobScalarFieldEnum)[keyof typeof FixJobScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -882,6 +984,48 @@ export type EnumCredentialProviderFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'CredentialProvider[]'
  */
 export type ListEnumCredentialProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CredentialProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FixJobStatus'
+ */
+export type EnumFixJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixJobStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FixJobStatus[]'
+ */
+export type ListEnumFixJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixJobStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ErrorCategory'
+ */
+export type EnumErrorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ErrorCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'ErrorCategory[]'
+ */
+export type ListEnumErrorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ErrorCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -997,6 +1141,7 @@ export type GlobalOmitConfig = {
   aIModel?: Prisma.AIModelOmit
   userModelKey?: Prisma.UserModelKeyOmit
   userCredential?: Prisma.UserCredentialOmit
+  fixJob?: Prisma.FixJobOmit
 }
 
 /* Types for Logging */

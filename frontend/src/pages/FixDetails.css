@@ -234,3 +234,314 @@
   max-width: 140px;
   line-height: 1.4;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* AI Reasoning Panel                                                         */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+.reasoning-panel {
+  background: linear-gradient(135deg, rgba(32, 31, 31, 0.95), rgba(19, 19, 19, 0.98));
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reasoning-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue), var(--accent-purple));
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -200% 0; }
+}
+
+.reasoning-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.reasoning-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reasoning-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.reasoning-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+}
+
+.risk-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ── Overall Summary ──────────────────────────────────────────────────────── */
+
+.overall-summary {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.overall-summary p {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ── Patches Grid ─────────────────────────────────────────────────────────── */
+
+.patches-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.patch-card {
+  background-color: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  animation: fadeSlideUp 0.4s ease-out both;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.patch-card:hover {
+  border-color: rgba(121, 40, 202, 0.35);
+  box-shadow: 0 0 20px rgba(121, 40, 202, 0.08);
+}
+
+.patch-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.patch-file-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.patch-file-path {
+  font-family: var(--font-code);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.confidence-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.patch-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Reasoning Fields ─────────────────────────────────────────────────────── */
+
+.reasoning-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reasoning-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reasoning-value {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding-left: 2px;
+}
+
+/* ── Confidence Bar ───────────────────────────────────────────────────────── */
+
+.confidence-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confidence-bar-track {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: barGrow 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes barGrow {
+  from { width: 0 !important; }
+}
+
+/* ── Alternatives Section ─────────────────────────────────────────────────── */
+
+.alternatives-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+}
+
+.alternatives-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.alternatives-toggle:hover {
+  color: var(--text-primary);
+}
+
+.alternatives-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.alternatives-list {
+  list-style: none;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: fadeSlideUp 0.3s ease-out;
+}
+
+.alternative-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  border-left: 2px solid rgba(255, 60, 60, 0.3);
+}
+
+.alt-bullet {
+  color: rgba(255, 60, 60, 0.6);
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* FixDetails.css Additions */
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--status-success);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px var(--status-success);
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.log-ts {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-right: 8px;
+  user-select: none;
+}
+
+.text-warning {
+  color: var(--status-warning) !important;
+}

@@ -2,6 +2,7 @@ import express from 'express';
 import { port } from './envdata/data.js';
 import {vercelRouter} from './router/vercel.js';
 import {userRouter} from './router/user.js';
+import {analyticsRouter} from './router/analytics.js';
 const app = express();
 
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/vercel",vercelRouter);
+app.use("/api/analytics", analyticsRouter);
 app.get("/api/health",(req,res)=>{res.send("server is running");})
 app.get("/health",(req,res)=>{res.send("server is running");})
 app.listen(port, () => {

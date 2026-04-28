@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   AIModel: 'AIModel',
   UserModelKey: 'UserModelKey',
-  UserCredential: 'UserCredential'
+  UserCredential: 'UserCredential',
+  FixJob: 'FixJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -121,6 +122,33 @@ export const UserCredentialScalarFieldEnum = {
 } as const
 
 export type UserCredentialScalarFieldEnum = (typeof UserCredentialScalarFieldEnum)[keyof typeof UserCredentialScalarFieldEnum]
+
+
+export const FixJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  projectName: 'projectName',
+  deploymentId: 'deploymentId',
+  bullmqJobId: 'bullmqJobId',
+  status: 'status',
+  errorCategory: 'errorCategory',
+  errorMessage: 'errorMessage',
+  aiProvider: 'aiProvider',
+  aiModel: 'aiModel',
+  confidenceScore: 'confidenceScore',
+  riskLevel: 'riskLevel',
+  durationMs: 'durationMs',
+  filesChanged: 'filesChanged',
+  fixedFiles: 'fixedFiles',
+  prUrl: 'prUrl',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FixJobScalarFieldEnum = (typeof FixJobScalarFieldEnum)[keyof typeof FixJobScalarFieldEnum]
 
 
 export const SortOrder = {

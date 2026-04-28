@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
-import { getJobStatus, type JobProgress } from '../api/client';
+import { getJobStatus, type JobProgress, type AIPatchReasoning } from '../api/client';
 import './FixDetails.css';
 
 // Maps backend step name to a display step index (0-3)
@@ -40,6 +40,103 @@ function getStatusLabel(state: string, step?: string) {
   return 'Unknown';
 }
 
+function getRiskColor(level?: string): string {
+  switch (level) {
+    case 'LOW': return 'var(--status-success)';
+    case 'MEDIUM': return '#f59e0b';
+    case 'HIGH': return 'var(--status-error)';
+    default: return 'var(--text-secondary)';
+  }
+}
+
+function getRiskBgColor(level?: string): string {
+  switch (level) {
+    case 'LOW': return 'var(--status-success-bg)';
+    case 'MEDIUM': return 'rgba(245, 158, 11, 0.12)';
+    case 'HIGH': return 'var(--status-error-bg)';
+    default: return 'rgba(255, 255, 255, 0.04)';
+  }
+}
+
+function getConfidenceColor(score: number): string {
+  if (score >= 0.8) return 'var(--status-success)';
+  if (score >= 0.5) return '#f59e0b';
+  return 'var(--status-error)';
+}
+
+/* ── Patch Card Sub-Component ──────────────────────────────────────────────── */
+const PatchReasoningCard: React.FC<{ patch: AIPatchReasoning; index: number }> = ({ patch, index }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const confidencePct = Math.round((patch.confidenceScore ?? 0) * 100);
+
+  return (
+    <div className="patch-card" style={{ animationDelay: `${index * 80}ms` }}>
+      <div className="patch-card-header">
+        <span className="patch-file-icon">📄</span>
+        <span className="patch-file-path">{patch.filePath}</span>
+        <span
+          className="confidence-pill"
+          style={{
+            color: getConfidenceColor(patch.confidenceScore),
+            borderColor: getConfidenceColor(patch.confidenceScore),
+          }}
+        >
+          {confidencePct}% confident
+        </span>
+      </div>
+
+      <div className="patch-card-body">
+        <div className="reasoning-field">
+          <span className="reasoning-label">🔍 Root Cause</span>
+          <p className="reasoning-value">{patch.rootCause}</p>
+        </div>
+
+        <div className="reasoning-field">
+          <span className="reasoning-label">🛠️ Fix Strategy</span>
+          <p className="reasoning-value">{patch.fixStrategy}</p>
+        </div>
+
+        <div className="confidence-bar-container">
+          <span className="reasoning-label">📊 Confidence</span>
+          <div className="confidence-bar-track">
+            <div
+              className="confidence-bar-fill"
+              style={{
+                width: `${confidencePct}%`,
+                backgroundColor: getConfidenceColor(patch.confidenceScore),
+              }}
+            />
+          </div>
+        </div>
+
+        {patch.alternativesConsidered && patch.alternativesConsidered.length > 0 && (
+          <div className="alternatives-section">
+            <button
+              className="alternatives-toggle"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-expanded={isOpen}
+            >
+              <span className="alternatives-icon">{isOpen ? '▾' : '▸'}</span>
+              Alternatives considered ({patch.alternativesConsidered.length})
+            </button>
+            {isOpen && (
+              <ul className="alternatives-list">
+                {patch.alternativesConsidered.map((alt, i) => (
+                  <li key={i} className="alternative-item">
+                    <span className="alt-bullet">✕</span>
+                    {alt}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── Main Component ────────────────────────────────────────────────────────── */
 const FixDetails: React.FC = () => {
   const [searchParams] = useSearchParams();
   const jobId = searchParams.get('jobId');
@@ -47,10 +144,44 @@ const FixDetails: React.FC = () => {
   const [progress, setProgress] = useState<JobProgress | null>(null);
   const [jobState, setJobState] = useState<string>('waiting');
   const [error, setError] = useState<string | null>(null);
+  const [realtimeLogs, setRealtimeLogs] = useState<any[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const logsEndRef = useRef<HTMLDivElement>(null);
 
   const isTerminal = (state: string, step?: string) =>
     state === 'failed' || step === 'pr_created' || step === 'failed' || step === 'no_error';
+
+  // Auto-scroll logs terminal
+  useEffect(() => {
+    if (logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [realtimeLogs]);
+
+  // SSE for Real-time Logs
+  useEffect(() => {
+    if (!jobId) return;
+
+    const token = localStorage.getItem("neurodeploy_token");
+    const es = new EventSource(`/api/vercel/jobs/${jobId}/stream?token=${token}`);
+    
+    es.onmessage = (e) => {
+      try {
+        const entry = JSON.parse(e.data);
+        setRealtimeLogs((prev) => [...prev, entry]);
+      } catch (err) {
+        console.error("Failed to parse SSE message", err);
+      }
+    };
+
+    es.onerror = () => {
+      console.warn("SSE connection error, it might have been closed by server.");
+      es.close();
+    };
+
+    return () => es.close();
+  }, [jobId]);
+
 
   useEffect(() => {
     if (!jobId) return;
@@ -72,11 +203,13 @@ const FixDetails: React.FC = () => {
     };
 
     poll();
-    intervalRef.current = setInterval(poll, 2500);
+    intervalRef.current = setInterval(poll, 3000); // Poll slower since we have SSE
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [jobId]);
 
   const currentStepIndex = progress ? getStepIndex(progress.step) : -1;
+  const reasoning = progress?.aiReasoning;
+  const hasReasoning = reasoning && (reasoning.overallSummary || (reasoning.patches && reasoning.patches.length > 0));
 
   // If no jobId, show instructions
   if (!jobId) {
@@ -119,19 +252,25 @@ const FixDetails: React.FC = () => {
       <div className="split-view">
         {/* Left: Logs */}
         <div className="pane left-pane">
-          <Card className="full-height-card" title="Worker Logs">
+          <Card className="full-height-card" title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Worker Logs
+              {jobState === 'active' && <span className="live-dot" />}
+            </div>
+          }>
             <div className="terminal">
-              {!progress && jobState === 'waiting' && (
+              {realtimeLogs.length === 0 && jobState === 'waiting' && (
                 <div className="terminal-line text-secondary">⏳ Job is queued, waiting for a worker...</div>
               )}
-              {progress?.logs?.map((line, i) => (
-                <div key={i} className={`terminal-line ${line.includes('FAILED') || line.includes('failed') ? 'text-error' : ''}`}>
-                  {line}
+              {realtimeLogs.map((log, i) => (
+                <div key={i} className={`terminal-line ${log.level === 'error' || log.message.includes('FAILED') ? 'text-error' : log.level === 'warn' ? 'text-warning' : ''}`}>
+                  <span className="log-ts">[{new Date(log.ts).toLocaleTimeString()}]</span> {log.message}
                 </div>
               ))}
               {jobState === 'active' && (
                 <div className="terminal-line text-secondary blinking-cursor">▌</div>
               )}
+              <div ref={logsEndRef} />
             </div>
           </Card>
         </div>
@@ -159,6 +298,45 @@ const FixDetails: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {/* ── AI Reasoning Panel ──────────────────────────────────────────────── */}
+      {hasReasoning && (
+        <div className="reasoning-panel mt-4">
+          <div className="reasoning-panel-header">
+            <div className="reasoning-title-group">
+              <span className="reasoning-icon">🧠</span>
+              <h2 className="reasoning-title">AI Reasoning</h2>
+            </div>
+            {reasoning.estimatedRiskLevel && (
+              <div
+                className="risk-badge"
+                style={{
+                  color: getRiskColor(reasoning.estimatedRiskLevel),
+                  backgroundColor: getRiskBgColor(reasoning.estimatedRiskLevel),
+                  borderColor: getRiskColor(reasoning.estimatedRiskLevel),
+                }}
+              >
+                <span className="risk-dot" style={{ backgroundColor: getRiskColor(reasoning.estimatedRiskLevel) }} />
+                {reasoning.estimatedRiskLevel} RISK
+              </div>
+            )}
+          </div>
+
+          {reasoning.overallSummary && (
+            <div className="overall-summary">
+              <p>{reasoning.overallSummary}</p>
+            </div>
+          )}
+
+          {reasoning.patches && reasoning.patches.length > 0 && (
+            <div className="patches-grid">
+              {reasoning.patches.map((patch, idx) => (
+                <PatchReasoningCard key={patch.filePath + idx} patch={patch} index={idx} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Timeline */}
       <Card title="Repair Timeline" className="timeline-card mt-4">

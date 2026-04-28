@@ -17,7 +17,11 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  let authHeader = req.headers.authorization;
+  if (!authHeader && req.query.token) {
+    authHeader = `Bearer ${req.query.token}`;
+  }
+
   if (!authHeader) {
     return res.status(401).json({ error: "Authorization header missing" });
   }

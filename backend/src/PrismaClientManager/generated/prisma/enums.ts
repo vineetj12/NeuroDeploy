@@ -9,6 +9,32 @@
 * 🟢 You can import this file directly.
 */
 
+export const FixJobStatus = {
+  QUEUED: 'QUEUED',
+  ANALYZING: 'ANALYZING',
+  VALIDATING: 'VALIDATING',
+  PR_CREATED: 'PR_CREATED',
+  FAILED: 'FAILED'
+} as const
+
+export type FixJobStatus = (typeof FixJobStatus)[keyof typeof FixJobStatus]
+
+
+export const ErrorCategory = {
+  BUILD_ERROR: 'BUILD_ERROR',
+  TYPE_ERROR: 'TYPE_ERROR',
+  SYNTAX_ERROR: 'SYNTAX_ERROR',
+  MISSING_DEPENDENCY: 'MISSING_DEPENDENCY',
+  MISSING_ENV_VAR: 'MISSING_ENV_VAR',
+  CONFIG_ERROR: 'CONFIG_ERROR',
+  DEPENDENCY_CONFLICT: 'DEPENDENCY_CONFLICT',
+  RUNTIME_ERROR: 'RUNTIME_ERROR',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type ErrorCategory = (typeof ErrorCategory)[keyof typeof ErrorCategory]
+
+
 export const Provider = {
   GEMINI: 'GEMINI',
   ANTHROPIC: 'ANTHROPIC',
