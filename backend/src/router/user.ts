@@ -162,7 +162,9 @@ userRouter.post("/models", authMiddleware, async (req: AuthenticatedRequest, res
     res.status(201).json(model);
   } catch (error) {
     console.error("[user] Error creating AI model:", error);
-    res.status(500).json({ error: "Failed to create AI model" });
+    const isDev = process.env.NODE_ENV !== "production";
+    const message = isDev && error instanceof Error ? error.message : "Failed to create AI model";
+    res.status(500).json({ error: message });
   }
 });
 

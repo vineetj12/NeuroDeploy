@@ -1,4 +1,4 @@
-import { Worker } from "bullmq";
+import { Queue, Worker } from "bullmq";
 import { Redis, type RedisOptions } from "ioredis";
 import { rm } from "node:fs/promises";
 import { REDIS_URL } from "../envdata/data.ts";
@@ -19,6 +19,9 @@ import { validateWithDocker } from "./lib/docker.ts";
 import { askSelectedModelForFix } from "./lib/ai.ts";
 import { createFixJob, updateFixJobStatus, completeFixJob } from "../services/fixJob.service.ts";
 import { classifyError } from "../services/errorClassifier.ts";
+import { DistributedRepoLock, LockConflictError } from "./distributedLock.ts";
+import { prisma } from "../PrismaClientManager/index.ts";
+import { isDeploymentStillRelevant } from "./deadLetter.ts";
 
 const redisOptions: RedisOptions = {
   maxRetriesPerRequest: null,
@@ -31,6 +34,9 @@ if (REDIS_URL.startsWith("rediss://")) {
 }
 
 const connection = new Redis(REDIS_URL, redisOptions);
+const statusQueue = new Queue(FIX_PROJECT_QUEUE_NAME, { connection });
+const statusLogMs = Number(process.env.WORKER_STATUS_LOG_MS ?? 60000);
+let statusTimer: NodeJS.Timeout | null = null;
 
 process.on("uncaughtException", (err) => {
   console.error("[fixProjectWorker] uncaughtException:", err);
@@ -39,6 +45,17 @@ process.on("uncaughtException", (err) => {
 process.on("unhandledRejection", (reason) => {
   console.error("[fixProjectWorker] unhandledRejection:", reason);
 });
+
+async function logQueueStatus(): Promise<void> {
+  try {
+    const counts = await statusQueue.getJobCounts("waiting", "active", "delayed", "failed", "completed");
+    console.log(
+      `[fixProjectWorker] queue status: waiting=${counts.waiting} active=${counts.active} delayed=${counts.delayed} failed=${counts.failed} completed=${counts.completed}`
+    );
+  } catch (error) {
+    console.warn("[fixProjectWorker] failed to fetch queue status:", error);
+  }
+}
 
 async function publishLog(jobId: string, message: string, level = "info"): Promise<void> {
   const entry = JSON.stringify({ message, level, ts: Date.now() });
@@ -55,6 +72,7 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
     const jobId = String(job.id ?? "unknown");
     const startTime = Date.now();
     let dbFixJobId: string | null = null;
+    let repoLock: DistributedRepoLock | null = null;
     
     await publishLog(jobId, "Starting auto-fix workflow");
 
@@ -65,6 +83,33 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
 
     const runtime = await loadWorkerRuntimeCredentials(userId);
     const project = await fetchProjectById(projectId, runtime.vercelToken);
+
+    const repoFullName = project.link?.org && project.link?.repo
+      ? `${project.link.org}/${project.link.repo}`
+      : null;
+
+    if (repoFullName) {
+      repoLock = new DistributedRepoLock(connection, repoFullName);
+      try {
+        await repoLock.acquire();
+        await publishLog(jobId, `🔒 Acquired lock for ${repoFullName}`);
+      } catch (error) {
+        if (error instanceof LockConflictError) {
+          await publishLog(jobId, `⏳ ${error.message}`, "warn");
+          await job.updateProgress({
+            step: "delayed",
+            logs: ["Another worker is already processing this repo. Re-queueing job."],
+            diff: null,
+            prUrl: null,
+          });
+          await job.moveToDelayed(Date.now() + 60_000);
+          return;
+        }
+        throw error;
+      }
+    } else {
+      await publishLog(jobId, "⚠️ Missing repo metadata (owner/repo). Proceeding without lock.", "warn");
+    }
 
     let deploymentError = latestDeploymentId
       ? await fetchDeploymentError(latestDeploymentId, runtime.vercelToken)
@@ -106,6 +151,9 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
       if (dbFixJobId) {
         await completeFixJob(dbFixJobId, { status: "FAILED", durationMs: Date.now() - startTime });
       }
+      if (repoLock) {
+        await repoLock.release();
+      }
       return;
     }
 
@@ -125,17 +173,20 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
         prUrl: null,
       });
 
+      repoLock?.assertActive();
       const cloneResult = await cloneProjectRepository(jobId, project, runtime.githubToken);
       repoDir = cloneResult.repoDir;
       branch = cloneResult.branch;
       await publishLog(jobId, `📁 Repository cloned at ${repoDir}`);
 
       featureBranch = buildFixBranchName(projectId, jobId);
+      repoLock?.assertActive();
       await checkoutBranch(repoDir, featureBranch);
 
       let fixedAndValidated = false;
 
       for (let attempt = 1; attempt <= 5; attempt += 1) {
+        repoLock?.assertActive();
         if (dbFixJobId) {
           await updateFixJobStatus(dbFixJobId, "ANALYZING");
         }
@@ -151,6 +202,7 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
         });
 
         const repoSnapshot = await buildRepositorySnapshot(repoDir);
+        repoLock?.assertActive();
         const aiFix = await askSelectedModelForFix({
           repoSnapshot,
           deploymenterrro: deploymentError,
@@ -160,6 +212,17 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
 
         const plannedChanges = aiFix.files ?? [];
         await publishLog(jobId, `🧠 Attempt ${attempt}: AI responded with ${plannedChanges.length} file changes.`);
+
+        if (dbFixJobId && plannedChanges.length > 0) {
+          try {
+            await prisma.fixJob.update({
+              where: { id: dbFixJobId },
+              data: { patchJson: plannedChanges as any },
+            });
+          } catch (error) {
+            console.warn("[fixProjectWorker] failed to store patchJson:", error);
+          }
+        }
 
         if (plannedChanges.length === 0) {
           await publishLog(jobId, `⚠️ Attempt ${attempt}: no code changes proposed by AI model.`, "warn");
@@ -206,6 +269,7 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
         await publishLog(jobId, `🐳 Attempt ${attempt}: validating repository with Docker...`);
         const validation = await validateWithDocker(repoDir, project);
         await publishLog(jobId, `🐳 Attempt ${attempt}: docker validation ${validation.ok ? "PASSED ✅" : "FAILED ❌"}`);
+        repoLock?.assertActive();
 
         if (validation.ok) {
           fixedAndValidated = true;
@@ -216,6 +280,7 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
           });
 
           await publishLog(jobId, "🚀 Validation passed. Pushing changes...");
+          repoLock?.assertActive();
           const pushed = await pushIfChanged(repoDir, featureBranch, commitMessage);
 
           let prUrl: string | null = null;
@@ -295,6 +360,9 @@ async function publishLog(jobId: string, message: string, level = "info"): Promi
         });
       }
     } finally {
+      if (repoLock) {
+        await repoLock.release();
+      }
       if (repoDir) {
         await publishLog(jobId, "🧹 Cleaning up cloned repository directory...");
         await rm(repoDir, { recursive: true, force: true });
@@ -309,8 +377,35 @@ worker.on("completed", (job) => {
   console.log(`[fixProjectWorker] completed job ${job.id}`);
 });
 
-worker.on("failed", (job, err) => {
+worker.on("active", (job) => {
+  console.log(`[fixProjectWorker] started job ${job.id}`);
+});
+
+worker.on("failed", async (job, err) => {
   console.error(`[fixProjectWorker] failed job ${job?.id}:`, err.message);
+
+  if (!job) return;
+  const maxAttempts = job.opts.attempts ?? 1;
+  if (job.attemptsMade < maxAttempts) return;
+
+  const userId = (job.data as FixProjectJobData)?.userId ?? null;
+  try {
+    await prisma.deadLetterJob.create({
+      data: {
+        originalJobId: String(job.id ?? "unknown"),
+        userId,
+        webhookPayload: job.data as any,
+        failureReason: err.message || "Job failed",
+        failureStack: err.stack ?? "",
+        attemptCount: job.attemptsMade,
+        firstFailedAt: new Date(job.timestamp ?? Date.now()),
+        lastFailedAt: new Date(),
+        canReplay: isDeploymentStillRelevant(job.timestamp),
+      },
+    });
+  } catch (error) {
+    console.error("[fixProjectWorker] failed to persist dead letter entry:", error);
+  }
 });
 
 worker.on("error", (err) => {
@@ -318,15 +413,26 @@ worker.on("error", (err) => {
 });
 
 process.on("SIGINT", async () => {
+  if (statusTimer) clearInterval(statusTimer);
   await worker.close();
+  await statusQueue.close();
   await connection.quit();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
+  if (statusTimer) clearInterval(statusTimer);
   await worker.close();
+  await statusQueue.close();
   await connection.quit();
   process.exit(0);
 });
+
+if (statusLogMs > 0) {
+  statusTimer = setInterval(() => {
+    void logQueueStatus();
+  }, statusLogMs);
+  void logQueueStatus();
+}
 
 console.log(`[fixProjectWorker] listening on ${FIX_PROJECT_QUEUE_NAME}`);

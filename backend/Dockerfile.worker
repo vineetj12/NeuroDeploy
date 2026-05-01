@@ -1,0 +1,21 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install git and ca-certificates (worker clones repos)
+RUN apt-get update && apt-get install -y git ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy source
+COPY . .
+
+# Generate Prisma client if present
+RUN npx prisma generate || true
+
+ENV PORT=4000
+
+# Run the worker process
+CMD ["npm", "run", "worker"]

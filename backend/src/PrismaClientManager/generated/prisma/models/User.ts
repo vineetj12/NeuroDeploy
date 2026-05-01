@@ -194,6 +194,7 @@ export type UserWhereInput = {
   modelKeys?: Prisma.UserModelKeyListRelationFilter
   credentials?: Prisma.UserCredentialListRelationFilter
   fixJobs?: Prisma.FixJobListRelationFilter
+  deadLetterJobs?: Prisma.DeadLetterJobListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -207,6 +208,7 @@ export type UserOrderByWithRelationInput = {
   modelKeys?: Prisma.UserModelKeyOrderByRelationAggregateInput
   credentials?: Prisma.UserCredentialOrderByRelationAggregateInput
   fixJobs?: Prisma.FixJobOrderByRelationAggregateInput
+  deadLetterJobs?: Prisma.DeadLetterJobOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -223,6 +225,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   modelKeys?: Prisma.UserModelKeyListRelationFilter
   credentials?: Prisma.UserCredentialListRelationFilter
   fixJobs?: Prisma.FixJobListRelationFilter
+  deadLetterJobs?: Prisma.DeadLetterJobListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -259,6 +262,7 @@ export type UserCreateInput = {
   modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -271,6 +275,7 @@ export type UserUncheckedCreateInput = {
   modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialUncheckedCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobUncheckedCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -283,6 +288,7 @@ export type UserUpdateInput = {
   modelKeys?: Prisma.UserModelKeyUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -295,6 +301,7 @@ export type UserUncheckedUpdateInput = {
   modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUncheckedUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUncheckedUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -363,6 +370,11 @@ export type UserOrderByRelationAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -461,6 +473,22 @@ export type UserUpdateOneRequiredWithoutFixJobsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFixJobsInput, Prisma.UserUpdateWithoutFixJobsInput>, Prisma.UserUncheckedUpdateWithoutFixJobsInput>
 }
 
+export type UserCreateNestedOneWithoutDeadLetterJobsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeadLetterJobsInput, Prisma.UserUncheckedCreateWithoutDeadLetterJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeadLetterJobsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutDeadLetterJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeadLetterJobsInput, Prisma.UserUncheckedCreateWithoutDeadLetterJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeadLetterJobsInput
+  upsert?: Prisma.UserUpsertWithoutDeadLetterJobsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDeadLetterJobsInput, Prisma.UserUpdateWithoutDeadLetterJobsInput>, Prisma.UserUncheckedUpdateWithoutDeadLetterJobsInput>
+}
+
 export type UserCreateWithoutSelectedModelInput = {
   id?: string
   email: string
@@ -470,6 +498,7 @@ export type UserCreateWithoutSelectedModelInput = {
   modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSelectedModelInput = {
@@ -481,6 +510,7 @@ export type UserUncheckedCreateWithoutSelectedModelInput = {
   modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialUncheckedCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobUncheckedCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSelectedModelInput = {
@@ -530,6 +560,7 @@ export type UserCreateWithoutModelKeysInput = {
   selectedModel?: Prisma.AIModelCreateNestedOneWithoutUsersInput
   credentials?: Prisma.UserCredentialCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutModelKeysInput = {
@@ -541,6 +572,7 @@ export type UserUncheckedCreateWithoutModelKeysInput = {
   updatedAt?: Date | string
   credentials?: Prisma.UserCredentialUncheckedCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobUncheckedCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutModelKeysInput = {
@@ -568,6 +600,7 @@ export type UserUpdateWithoutModelKeysInput = {
   selectedModel?: Prisma.AIModelUpdateOneWithoutUsersNestedInput
   credentials?: Prisma.UserCredentialUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutModelKeysInput = {
@@ -579,6 +612,7 @@ export type UserUncheckedUpdateWithoutModelKeysInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   credentials?: Prisma.UserCredentialUncheckedUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUncheckedUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCredentialsInput = {
@@ -590,6 +624,7 @@ export type UserCreateWithoutCredentialsInput = {
   selectedModel?: Prisma.AIModelCreateNestedOneWithoutUsersInput
   modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCredentialsInput = {
@@ -601,6 +636,7 @@ export type UserUncheckedCreateWithoutCredentialsInput = {
   updatedAt?: Date | string
   modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutUserInput
   fixJobs?: Prisma.FixJobUncheckedCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCredentialsInput = {
@@ -628,6 +664,7 @@ export type UserUpdateWithoutCredentialsInput = {
   selectedModel?: Prisma.AIModelUpdateOneWithoutUsersNestedInput
   modelKeys?: Prisma.UserModelKeyUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCredentialsInput = {
@@ -639,6 +676,7 @@ export type UserUncheckedUpdateWithoutCredentialsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUncheckedUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFixJobsInput = {
@@ -650,6 +688,7 @@ export type UserCreateWithoutFixJobsInput = {
   selectedModel?: Prisma.AIModelCreateNestedOneWithoutUsersInput
   modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFixJobsInput = {
@@ -661,6 +700,7 @@ export type UserUncheckedCreateWithoutFixJobsInput = {
   updatedAt?: Date | string
   modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutUserInput
   credentials?: Prisma.UserCredentialUncheckedCreateNestedManyWithoutUserInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFixJobsInput = {
@@ -688,6 +728,7 @@ export type UserUpdateWithoutFixJobsInput = {
   selectedModel?: Prisma.AIModelUpdateOneWithoutUsersNestedInput
   modelKeys?: Prisma.UserModelKeyUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFixJobsInput = {
@@ -699,6 +740,71 @@ export type UserUncheckedUpdateWithoutFixJobsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUncheckedUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutDeadLetterJobsInput = {
+  id?: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  selectedModel?: Prisma.AIModelCreateNestedOneWithoutUsersInput
+  modelKeys?: Prisma.UserModelKeyCreateNestedManyWithoutUserInput
+  credentials?: Prisma.UserCredentialCreateNestedManyWithoutUserInput
+  fixJobs?: Prisma.FixJobCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutDeadLetterJobsInput = {
+  id?: string
+  email: string
+  password: string
+  selectedModelId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  modelKeys?: Prisma.UserModelKeyUncheckedCreateNestedManyWithoutUserInput
+  credentials?: Prisma.UserCredentialUncheckedCreateNestedManyWithoutUserInput
+  fixJobs?: Prisma.FixJobUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutDeadLetterJobsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeadLetterJobsInput, Prisma.UserUncheckedCreateWithoutDeadLetterJobsInput>
+}
+
+export type UserUpsertWithoutDeadLetterJobsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDeadLetterJobsInput, Prisma.UserUncheckedUpdateWithoutDeadLetterJobsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeadLetterJobsInput, Prisma.UserUncheckedCreateWithoutDeadLetterJobsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDeadLetterJobsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDeadLetterJobsInput, Prisma.UserUncheckedUpdateWithoutDeadLetterJobsInput>
+}
+
+export type UserUpdateWithoutDeadLetterJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  selectedModel?: Prisma.AIModelUpdateOneWithoutUsersNestedInput
+  modelKeys?: Prisma.UserModelKeyUpdateManyWithoutUserNestedInput
+  credentials?: Prisma.UserCredentialUpdateManyWithoutUserNestedInput
+  fixJobs?: Prisma.FixJobUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDeadLetterJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  selectedModelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutUserNestedInput
+  credentials?: Prisma.UserCredentialUncheckedUpdateManyWithoutUserNestedInput
+  fixJobs?: Prisma.FixJobUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManySelectedModelInput = {
@@ -718,6 +824,7 @@ export type UserUpdateWithoutSelectedModelInput = {
   modelKeys?: Prisma.UserModelKeyUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSelectedModelInput = {
@@ -729,6 +836,7 @@ export type UserUncheckedUpdateWithoutSelectedModelInput = {
   modelKeys?: Prisma.UserModelKeyUncheckedUpdateManyWithoutUserNestedInput
   credentials?: Prisma.UserCredentialUncheckedUpdateManyWithoutUserNestedInput
   fixJobs?: Prisma.FixJobUncheckedUpdateManyWithoutUserNestedInput
+  deadLetterJobs?: Prisma.DeadLetterJobUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutSelectedModelInput = {
@@ -748,12 +856,14 @@ export type UserCountOutputType = {
   modelKeys: number
   credentials: number
   fixJobs: number
+  deadLetterJobs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   modelKeys?: boolean | UserCountOutputTypeCountModelKeysArgs
   credentials?: boolean | UserCountOutputTypeCountCredentialsArgs
   fixJobs?: boolean | UserCountOutputTypeCountFixJobsArgs
+  deadLetterJobs?: boolean | UserCountOutputTypeCountDeadLetterJobsArgs
 }
 
 /**
@@ -787,6 +897,13 @@ export type UserCountOutputTypeCountFixJobsArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.FixJobWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDeadLetterJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeadLetterJobWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -799,6 +916,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   modelKeys?: boolean | Prisma.User$modelKeysArgs<ExtArgs>
   credentials?: boolean | Prisma.User$credentialsArgs<ExtArgs>
   fixJobs?: boolean | Prisma.User$fixJobsArgs<ExtArgs>
+  deadLetterJobs?: boolean | Prisma.User$deadLetterJobsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -837,6 +955,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   modelKeys?: boolean | Prisma.User$modelKeysArgs<ExtArgs>
   credentials?: boolean | Prisma.User$credentialsArgs<ExtArgs>
   fixJobs?: boolean | Prisma.User$fixJobsArgs<ExtArgs>
+  deadLetterJobs?: boolean | Prisma.User$deadLetterJobsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -853,6 +972,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     modelKeys: Prisma.$UserModelKeyPayload<ExtArgs>[]
     credentials: Prisma.$UserCredentialPayload<ExtArgs>[]
     fixJobs: Prisma.$FixJobPayload<ExtArgs>[]
+    deadLetterJobs: Prisma.$DeadLetterJobPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1259,6 +1379,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   modelKeys<T extends Prisma.User$modelKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$modelKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserModelKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   credentials<T extends Prisma.User$credentialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$credentialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fixJobs<T extends Prisma.User$fixJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fixJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FixJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deadLetterJobs<T extends Prisma.User$deadLetterJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deadLetterJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1783,6 +1904,30 @@ export type User$fixJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.FixJobScalarFieldEnum | Prisma.FixJobScalarFieldEnum[]
+}
+
+/**
+ * User.deadLetterJobs
+ */
+export type User$deadLetterJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeadLetterJob
+   */
+  select?: Prisma.DeadLetterJobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeadLetterJob
+   */
+  omit?: Prisma.DeadLetterJobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeadLetterJobInclude<ExtArgs> | null
+  where?: Prisma.DeadLetterJobWhereInput
+  orderBy?: Prisma.DeadLetterJobOrderByWithRelationInput | Prisma.DeadLetterJobOrderByWithRelationInput[]
+  cursor?: Prisma.DeadLetterJobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeadLetterJobScalarFieldEnum | Prisma.DeadLetterJobScalarFieldEnum[]
 }
 
 /**

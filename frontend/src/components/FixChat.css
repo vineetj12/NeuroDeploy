@@ -1,0 +1,131 @@
+.fix-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: radial-gradient(circle at top right, rgba(0, 112, 243, 0.15), transparent 45%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(10, 10, 10, 0.94));
+}
+
+.fix-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.fix-chat-header h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.fix-chat-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.fix-chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.fix-chat-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fix-chat-message.user {
+  flex-direction: row-reverse;
+}
+
+.fix-chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fix-chat-message.user .fix-chat-avatar {
+  background: rgba(0, 112, 243, 0.25);
+  color: var(--text-primary);
+}
+
+.fix-chat-bubble {
+  max-width: 70%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fix-chat-message.user .fix-chat-bubble {
+  background: rgba(0, 112, 243, 0.18);
+  border-color: rgba(0, 112, 243, 0.3);
+}
+
+.fix-chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fix-chat-suggestions button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fix-chat-suggestions button:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fix-chat-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fix-chat-input input {
+  flex: 1;
+  background: rgba(12, 12, 12, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+}
+
+.fix-chat-input input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.fix-chat-error {
+  color: var(--status-error);
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .fix-chat-bubble {
+    max-width: 100%;
+  }
+}

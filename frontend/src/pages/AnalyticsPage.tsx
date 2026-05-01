@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from "recharts";
 import { getAnalyticsSummary, getAnalyticsTimeline, getAnalyticsFiles } from "../api/client";
 import { Card } from "../components/ui/Card";
@@ -142,9 +142,9 @@ export default function AnalyticsPage() {
                   contentStyle={{ backgroundColor: "#1e1e1e", border: "1px solid #333", borderRadius: "8px" }}
                 />
                 <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                  {summary.topErrors.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                  {summary.topErrors.map((_: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

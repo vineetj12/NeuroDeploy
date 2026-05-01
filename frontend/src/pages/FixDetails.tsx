@@ -4,6 +4,7 @@ import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { getJobStatus, type JobProgress, type AIPatchReasoning } from '../api/client';
+import FixChat from '../components/FixChat';
 import './FixDetails.css';
 
 // Maps backend step name to a display step index (0-3)
@@ -337,6 +338,10 @@ const FixDetails: React.FC = () => {
           )}
         </div>
       )}
+
+      <div className="mt-4">
+        <FixChat jobId={jobId} />
+      </div>
 
       {/* Timeline */}
       <Card title="Repair Timeline" className="timeline-card mt-4">

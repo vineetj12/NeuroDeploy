@@ -24,6 +24,7 @@ model User {
   modelKeys     UserModelKey[]
   credentials   UserCredential[]
   fixJobs       FixJob[]
+  deadLetterJobs DeadLetterJob[]
 }
 
 model AIModel {
@@ -77,6 +78,7 @@ model FixJob {
   status          FixJobStatus   @default(QUEUED)
   errorCategory   ErrorCategory  @default(UNKNOWN)
   errorMessage    String?
+  patchJson       Json?
   aiProvider      String?
   aiModel         String?
   confidenceScore Float?
@@ -95,6 +97,30 @@ model FixJob {
   @@index([userId])
   @@index([userId, status])
   @@index([userId, createdAt])
+}
+
+model DeadLetterJob {
+  id              String   @id @default(uuid())
+  originalJobId   String
+  userId          String?
+  webhookPayload  Json
+  failureReason   String
+  failureStack    String?
+  attemptCount    Int
+  canReplay       Boolean  @default(true)
+  replayedAt      DateTime?
+  replayJobId     String?
+  dismissedAt     DateTime?
+  firstFailedAt   DateTime @default(now())
+  lastFailedAt    DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, dismissedAt])
+  @@index([originalJobId])
 }
 
 enum FixJobStatus {

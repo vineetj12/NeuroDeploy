@@ -28,3 +28,17 @@ export async function getUserVercelToken(userId: string): Promise<string> {
   console.log(`[credential.service] Found Vercel token for userId=${userId}`);
   return secret;
 }
+
+/**
+ * Retrieves the GitHub token for a user, throwing if it is missing.
+ */
+export async function getUserGithubToken(userId: string): Promise<string> {
+  console.log(`[credential.service] Looking up GitHub token for userId=${userId}`);
+  const secret = await getLatestCredentialSecret(userId, "GITHUB");
+  if (!secret) {
+    console.error(`[credential.service] No GitHub credential found for userId=${userId}`);
+    throw new Error("GitHub credential not found for this user.");
+  }
+  console.log(`[credential.service] Found GitHub token for userId=${userId}`);
+  return secret;
+}

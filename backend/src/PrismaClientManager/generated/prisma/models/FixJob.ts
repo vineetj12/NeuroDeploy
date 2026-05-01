@@ -94,6 +94,7 @@ export type FixJobCountAggregateOutputType = {
   status: number
   errorCategory: number
   errorMessage: number
+  patchJson: number
   aiProvider: number
   aiModel: number
   confidenceScore: number
@@ -178,6 +179,7 @@ export type FixJobCountAggregateInputType = {
   status?: true
   errorCategory?: true
   errorMessage?: true
+  patchJson?: true
   aiProvider?: true
   aiModel?: true
   confidenceScore?: true
@@ -289,6 +291,7 @@ export type FixJobGroupByOutputType = {
   status: $Enums.FixJobStatus
   errorCategory: $Enums.ErrorCategory
   errorMessage: string | null
+  patchJson: runtime.JsonValue | null
   aiProvider: string | null
   aiModel: string | null
   confidenceScore: number | null
@@ -336,6 +339,7 @@ export type FixJobWhereInput = {
   status?: Prisma.EnumFixJobStatusFilter<"FixJob"> | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFilter<"FixJob"> | $Enums.ErrorCategory
   errorMessage?: Prisma.StringNullableFilter<"FixJob"> | string | null
+  patchJson?: Prisma.JsonNullableFilter<"FixJob">
   aiProvider?: Prisma.StringNullableFilter<"FixJob"> | string | null
   aiModel?: Prisma.StringNullableFilter<"FixJob"> | string | null
   confidenceScore?: Prisma.FloatNullableFilter<"FixJob"> | number | null
@@ -361,6 +365,7 @@ export type FixJobOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   errorCategory?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  patchJson?: Prisma.SortOrderInput | Prisma.SortOrder
   aiProvider?: Prisma.SortOrderInput | Prisma.SortOrder
   aiModel?: Prisma.SortOrderInput | Prisma.SortOrder
   confidenceScore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -389,6 +394,7 @@ export type FixJobWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumFixJobStatusFilter<"FixJob"> | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFilter<"FixJob"> | $Enums.ErrorCategory
   errorMessage?: Prisma.StringNullableFilter<"FixJob"> | string | null
+  patchJson?: Prisma.JsonNullableFilter<"FixJob">
   aiProvider?: Prisma.StringNullableFilter<"FixJob"> | string | null
   aiModel?: Prisma.StringNullableFilter<"FixJob"> | string | null
   confidenceScore?: Prisma.FloatNullableFilter<"FixJob"> | number | null
@@ -414,6 +420,7 @@ export type FixJobOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   errorCategory?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  patchJson?: Prisma.SortOrderInput | Prisma.SortOrder
   aiProvider?: Prisma.SortOrderInput | Prisma.SortOrder
   aiModel?: Prisma.SortOrderInput | Prisma.SortOrder
   confidenceScore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -446,6 +453,7 @@ export type FixJobScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumFixJobStatusWithAggregatesFilter<"FixJob"> | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryWithAggregatesFilter<"FixJob"> | $Enums.ErrorCategory
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"FixJob"> | string | null
+  patchJson?: Prisma.JsonNullableWithAggregatesFilter<"FixJob">
   aiProvider?: Prisma.StringNullableWithAggregatesFilter<"FixJob"> | string | null
   aiModel?: Prisma.StringNullableWithAggregatesFilter<"FixJob"> | string | null
   confidenceScore?: Prisma.FloatNullableWithAggregatesFilter<"FixJob"> | number | null
@@ -469,6 +477,7 @@ export type FixJobCreateInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -494,6 +503,7 @@ export type FixJobUncheckedCreateInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -517,6 +527,7 @@ export type FixJobUpdateInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -542,6 +553,7 @@ export type FixJobUncheckedUpdateInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -566,6 +578,7 @@ export type FixJobCreateManyInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -589,6 +602,7 @@ export type FixJobUpdateManyMutationInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -613,6 +627,7 @@ export type FixJobUncheckedUpdateManyInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -655,6 +670,7 @@ export type FixJobCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   errorCategory?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
+  patchJson?: Prisma.SortOrder
   aiProvider?: Prisma.SortOrder
   aiModel?: Prisma.SortOrder
   confidenceScore?: Prisma.SortOrder
@@ -823,6 +839,7 @@ export type FixJobCreateWithoutUserInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -846,6 +863,7 @@ export type FixJobUncheckedCreateWithoutUserInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -899,6 +917,7 @@ export type FixJobScalarWhereInput = {
   status?: Prisma.EnumFixJobStatusFilter<"FixJob"> | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFilter<"FixJob"> | $Enums.ErrorCategory
   errorMessage?: Prisma.StringNullableFilter<"FixJob"> | string | null
+  patchJson?: Prisma.JsonNullableFilter<"FixJob">
   aiProvider?: Prisma.StringNullableFilter<"FixJob"> | string | null
   aiModel?: Prisma.StringNullableFilter<"FixJob"> | string | null
   confidenceScore?: Prisma.FloatNullableFilter<"FixJob"> | number | null
@@ -922,6 +941,7 @@ export type FixJobCreateManyUserInput = {
   status?: $Enums.FixJobStatus
   errorCategory?: $Enums.ErrorCategory
   errorMessage?: string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: string | null
   aiModel?: string | null
   confidenceScore?: number | null
@@ -945,6 +965,7 @@ export type FixJobUpdateWithoutUserInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -968,6 +989,7 @@ export type FixJobUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -991,6 +1013,7 @@ export type FixJobUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.EnumFixJobStatusFieldUpdateOperationsInput | $Enums.FixJobStatus
   errorCategory?: Prisma.EnumErrorCategoryFieldUpdateOperationsInput | $Enums.ErrorCategory
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patchJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   aiProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1017,6 +1040,7 @@ export type FixJobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   status?: boolean
   errorCategory?: boolean
   errorMessage?: boolean
+  patchJson?: boolean
   aiProvider?: boolean
   aiModel?: boolean
   confidenceScore?: boolean
@@ -1042,6 +1066,7 @@ export type FixJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   status?: boolean
   errorCategory?: boolean
   errorMessage?: boolean
+  patchJson?: boolean
   aiProvider?: boolean
   aiModel?: boolean
   confidenceScore?: boolean
@@ -1067,6 +1092,7 @@ export type FixJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   status?: boolean
   errorCategory?: boolean
   errorMessage?: boolean
+  patchJson?: boolean
   aiProvider?: boolean
   aiModel?: boolean
   confidenceScore?: boolean
@@ -1092,6 +1118,7 @@ export type FixJobSelectScalar = {
   status?: boolean
   errorCategory?: boolean
   errorMessage?: boolean
+  patchJson?: boolean
   aiProvider?: boolean
   aiModel?: boolean
   confidenceScore?: boolean
@@ -1106,7 +1133,7 @@ export type FixJobSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FixJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "projectId" | "projectName" | "deploymentId" | "bullmqJobId" | "status" | "errorCategory" | "errorMessage" | "aiProvider" | "aiModel" | "confidenceScore" | "riskLevel" | "durationMs" | "filesChanged" | "fixedFiles" | "prUrl" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["fixJob"]>
+export type FixJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "projectId" | "projectName" | "deploymentId" | "bullmqJobId" | "status" | "errorCategory" | "errorMessage" | "patchJson" | "aiProvider" | "aiModel" | "confidenceScore" | "riskLevel" | "durationMs" | "filesChanged" | "fixedFiles" | "prUrl" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["fixJob"]>
 export type FixJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1132,6 +1159,7 @@ export type $FixJobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     status: $Enums.FixJobStatus
     errorCategory: $Enums.ErrorCategory
     errorMessage: string | null
+    patchJson: runtime.JsonValue | null
     aiProvider: string | null
     aiModel: string | null
     confidenceScore: number | null
@@ -1577,6 +1605,7 @@ export interface FixJobFieldRefs {
   readonly status: Prisma.FieldRef<"FixJob", 'FixJobStatus'>
   readonly errorCategory: Prisma.FieldRef<"FixJob", 'ErrorCategory'>
   readonly errorMessage: Prisma.FieldRef<"FixJob", 'String'>
+  readonly patchJson: Prisma.FieldRef<"FixJob", 'Json'>
   readonly aiProvider: Prisma.FieldRef<"FixJob", 'String'>
   readonly aiModel: Prisma.FieldRef<"FixJob", 'String'>
   readonly confidenceScore: Prisma.FieldRef<"FixJob", 'Float'>

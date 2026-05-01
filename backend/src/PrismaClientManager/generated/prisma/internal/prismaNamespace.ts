@@ -388,7 +388,8 @@ export const ModelName = {
   AIModel: 'AIModel',
   UserModelKey: 'UserModelKey',
   UserCredential: 'UserCredential',
-  FixJob: 'FixJob'
+  FixJob: 'FixJob',
+  DeadLetterJob: 'DeadLetterJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "aIModel" | "userModelKey" | "userCredential" | "fixJob"
+    modelProps: "user" | "aIModel" | "userModelKey" | "userCredential" | "fixJob" | "deadLetterJob"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DeadLetterJob: {
+      payload: Prisma.$DeadLetterJobPayload<ExtArgs>
+      fields: Prisma.DeadLetterJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeadLetterJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeadLetterJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        findFirst: {
+          args: Prisma.DeadLetterJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeadLetterJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        findMany: {
+          args: Prisma.DeadLetterJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+        }
+        create: {
+          args: Prisma.DeadLetterJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        createMany: {
+          args: Prisma.DeadLetterJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeadLetterJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+        }
+        delete: {
+          args: Prisma.DeadLetterJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        update: {
+          args: Prisma.DeadLetterJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.DeadLetterJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeadLetterJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeadLetterJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.DeadLetterJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+        }
+        aggregate: {
+          args: Prisma.DeadLetterJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDeadLetterJob>
+        }
+        groupBy: {
+          args: Prisma.DeadLetterJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeadLetterJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeadLetterJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeadLetterJobCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -877,6 +952,7 @@ export const FixJobScalarFieldEnum = {
   status: 'status',
   errorCategory: 'errorCategory',
   errorMessage: 'errorMessage',
+  patchJson: 'patchJson',
   aiProvider: 'aiProvider',
   aiModel: 'aiModel',
   confidenceScore: 'confidenceScore',
@@ -894,12 +970,48 @@ export const FixJobScalarFieldEnum = {
 export type FixJobScalarFieldEnum = (typeof FixJobScalarFieldEnum)[keyof typeof FixJobScalarFieldEnum]
 
 
+export const DeadLetterJobScalarFieldEnum = {
+  id: 'id',
+  originalJobId: 'originalJobId',
+  userId: 'userId',
+  webhookPayload: 'webhookPayload',
+  failureReason: 'failureReason',
+  failureStack: 'failureStack',
+  attemptCount: 'attemptCount',
+  canReplay: 'canReplay',
+  replayedAt: 'replayedAt',
+  replayJobId: 'replayJobId',
+  dismissedAt: 'dismissedAt',
+  firstFailedAt: 'firstFailedAt',
+  lastFailedAt: 'lastFailedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeadLetterJobScalarFieldEnum = (typeof DeadLetterJobScalarFieldEnum)[keyof typeof DeadLetterJobScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -916,6 +1028,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1012,6 +1133,20 @@ export type EnumErrorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ErrorCategory[]'
  */
 export type ListEnumErrorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ErrorCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1142,6 +1277,7 @@ export type GlobalOmitConfig = {
   userModelKey?: Prisma.UserModelKeyOmit
   userCredential?: Prisma.UserCredentialOmit
   fixJob?: Prisma.FixJobOmit
+  deadLetterJob?: Prisma.DeadLetterJobOmit
 }
 
 /* Types for Logging */

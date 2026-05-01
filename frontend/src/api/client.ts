@@ -1,6 +1,6 @@
 // API Client — all requests use JWT token from localStorage
 
-const BASE = '/api';
+const BASE = (import.meta.env.VITE_API_BASE as string) || '/api';
 
 function getToken(): string | null {
   return localStorage.getItem('neurodeploy_token');
@@ -177,4 +177,50 @@ export const getAnalyticsFiles = async (limit = 20) => {
   if (res.status === 401) throw new Error('UNAUTHORIZED');
   if (!res.ok) throw new Error("Failed to fetch analytics files");
   return res.json();
+};
+
+// ── Dead Letter Queue ─────────────────────────────────────────────────────
+
+export interface DeadLetterEntry {
+  id: string;
+  originalJobId: string;
+  webhookPayload: Record<string, unknown>;
+  failureReason: string;
+  failureStack?: string | null;
+  attemptCount: number;
+  firstFailedAt: string;
+  lastFailedAt: string;
+  canReplay: boolean;
+  replayedAt?: string | null;
+  replayJobId?: string | null;
+}
+
+export const getDeadLetterEntries = async (): Promise<DeadLetterEntry[]> => {
+  const res = await fetch(`${BASE}/dead-letter`, { headers: authHeaders() });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) throw new Error('Failed to fetch dead letter entries');
+  return res.json();
+};
+
+export const replayDeadLetterEntry = async (id: string): Promise<string> => {
+  const res = await fetch(`${BASE}/dead-letter/${id}/replay`, {
+    method: 'POST',
+    headers: authHeaders(),
+  });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to replay dead letter job');
+  }
+  const data = await res.json();
+  return data.newJobId as string;
+};
+
+export const dismissDeadLetterEntry = async (id: string): Promise<void> => {
+  const res = await fetch(`${BASE}/dead-letter/${id}/dismiss`, {
+    method: 'POST',
+    headers: authHeaders(),
+  });
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
+  if (!res.ok) throw new Error('Failed to dismiss dead letter entry');
 };

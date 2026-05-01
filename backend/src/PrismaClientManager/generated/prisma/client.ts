@@ -66,3 +66,8 @@ export type UserCredential = Prisma.UserCredentialModel
  * 
  */
 export type FixJob = Prisma.FixJobModel
+/**
+ * Model DeadLetterJob
+ * 
+ */
+export type DeadLetterJob = Prisma.DeadLetterJobModel

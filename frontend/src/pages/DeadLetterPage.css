@@ -1,0 +1,144 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+.dead-letter-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dead-letter-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: radial-gradient(circle at top left, rgba(121, 40, 202, 0.2), transparent 45%),
+    linear-gradient(135deg, rgba(0, 112, 243, 0.16), rgba(15, 15, 15, 0.95));
+}
+
+.dead-letter-hero-copy h1 {
+  font-family: "Space Grotesk", var(--font-ui);
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.dead-letter-kicker {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.dead-letter-subtitle {
+  color: var(--text-secondary);
+  max-width: 520px;
+  font-size: 14px;
+}
+
+.dead-letter-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dead-letter-error {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.dead-letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.dead-letter-card {
+  border: 1px solid var(--border-color);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.04), rgba(8, 8, 8, 0.92));
+}
+
+.dead-letter-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.dead-letter-title {
+  font-family: "Space Grotesk", var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.dead-letter-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.dead-letter-reason {
+  font-size: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 16px;
+}
+
+.dead-letter-payload {
+  background: rgba(5, 5, 5, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.dead-letter-payload-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.dead-letter-payload pre {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--text-primary);
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.dead-letter-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dead-letter-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary);
+}
+
+.dead-letter-empty h3 {
+  font-family: "Space Grotesk", var(--font-ui);
+  margin-bottom: 8px;
+}
+
+.dead-letter-muted {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .dead-letter-hero {
+    flex-direction: column;
+  }
+}

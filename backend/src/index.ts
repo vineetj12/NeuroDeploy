@@ -3,6 +3,8 @@ import { port } from './envdata/data.js';
 import {vercelRouter} from './router/vercel.js';
 import {userRouter} from './router/user.js';
 import {analyticsRouter} from './router/analytics.js';
+import {deadLetterRouter} from './router/deadLetter.js';
+import {fixChatRouter} from './router/fixChat.js';
 const app = express();
 
 app.use(express.json());
@@ -21,6 +23,8 @@ app.use((req, res, next) => {
 app.use("/api/user", userRouter);
 app.use("/api/vercel",vercelRouter);
 app.use("/api/analytics", analyticsRouter);
+app.use("/api/dead-letter", deadLetterRouter);
+app.use("/api", fixChatRouter);
 app.get("/api/health",(req,res)=>{res.send("server is running");})
 app.get("/health",(req,res)=>{res.send("server is running");})
 app.listen(port, () => {
